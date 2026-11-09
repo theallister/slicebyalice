@@ -1,0 +1,70 @@
+@using SliceByAlice.Extensions
+
+@{
+    List<ProductCategory>? categories = ViewData["categories"] as List<ProductCategory>;
+    List<ProductTag>? tags = ViewData["tags"] as List<ProductTag>;
+}
+<button 
+    type="button" 
+    class="store__filter__toggle"
+    :class="open && 'open'"
+    aria-controls="store__filter"
+    :aria-expanded="open ? 'true' : 'false'"
+    @@click="open = !open">
+    <span class="label">
+        Filter
+    </span>
+    <span class="icon icon--chevron-down" aria-hidden="true">
+        <partial name="../Partials/SVG/chevron-down.cshtml" />
+    </span>
+</button>
+<form id="store__filter" class="store__filter__form" x-show="open" x-cloak>
+    @if (categories != null && categories.Any())
+    {
+        <fieldset class="fieldset fieldset__radio" data-fieldset="category" data-filter-group="category">
+            <legend>Kategorier</legend>
+            @foreach (var category in categories)
+            {
+                <div class="store__filter__form__item store__filter__form__item--radio">
+                    <input class="form__radio" type="radio" id="category-@category?.Name.ToUrlSegment()" name="category" value="@category?.Name.ToUrlSegment()" x-model="selectedCategory" />
+                    <label for="category-@category?.Name.ToUrlSegment()">@category?.Name</label>
+                </div>
+            }
+            <div class="store__filter__form__item store__filter__form__item--radio store__filter__form__item--reset">
+                <input class="form__radio" type="radio" id="reset-categories" name="category" value="all" x-model="selectedCategory" :checked="selectedCategory === 'all'" />
+                <label for="reset-categories">Alla kategorier</label>
+            </div>
+        </fieldset>
+    }
+    @if (tags != null && tags.Any())
+    {
+        <fieldset class="fieldset fieldset__checkbox" data-fieldset="tag" data-filter-group="tag">
+        <legend>Taggar</legend>
+        @foreach (var tag in tags)
+        {
+            <div class="store__filter__form__item store__filter__form__item--checkbox">
+                <input 
+                    class="form__checkbox" 
+                    type="checkbox" 
+                    id="tag-@tag?.Name.ToUrlSegment()" 
+                    name="tag" 
+                    value="@tag?.Name.ToUrlSegment()" 
+                    x-model="selectedTags" />
+                <label for="tag-@tag?.Name.ToUrlSegment()">@tag?.Name</label>
+            </div>
+        }
+        <div class="store__filter__form__item store__filter__form__item--checkbox store__filter__form__item--reset">
+            <input 
+                class="form__checkbox" 
+                type="checkbox" 
+                id="reset-tags" 
+                name="reset-tags" 
+                value="" 
+                x-model="selectedTags" 
+                :checked="selectedTags.length === 0"
+                @@input="selectedTags = []" />
+            <label for="reset-tags">Alla taggar</label>
+        </div>
+        </fieldset>
+    }
+</form>

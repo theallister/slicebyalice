@@ -1,0 +1,93 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.HeroBlock>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models;
+@using SliceByAlice
+
+@{
+	string? heading = !string.IsNullOrWhiteSpace(Model?.Heading) ? Model?.Heading : Umbraco.AssignedContentItem?.Name;
+    string? headingSize = Model?.GetHeadingSize();
+    string? headingColorClass = !string.IsNullOrWhiteSpace(Model?.GetHeadingColorClass()) ? Model.GetHeadingColorClass() : "color--blue";
+    string? headingStyleClass = Model?.GetHeadingStyle();
+    string? textSize = Model?.GetTextSize();
+    string? textColorClass = Model?.GetTextColorClass();
+    string? dropShadowClass = Model?.GetDropShadowClass();
+	string? heightClass = "";
+	switch (Model?.BlockHeight?.ToLower())
+	{
+		case "large":
+			heightClass = "hero--large";
+			break;
+		case "small":
+			heightClass = "hero--small";
+			break;
+		case "medium":
+		default:
+			heightClass = "hero--medium";
+			break;
+	}
+
+	MediaWithCrops? image = Model?.Image;
+	MediaWithCrops? mobileImage = Model?.ImageMobile != null ? Model?.ImageMobile : image;
+}
+
+<section class="container hero @heightClass" id="header" aria-labelledby="startpage-heading">
+	@if (Model?.Image != null)
+	{
+		bool isSvg = Model?.Image.Value("umbracoExtension")?.ToString()?.ToLower() == "svg";
+		<div class="hero__image-container border-radius @dropShadowClass" aria-hidden="true">
+			@if (isSvg)
+			{	
+				<div class="hero__image-container__svg-container">
+					<img src="@image?.Url()" alt="" />
+				</div>
+			}
+			else
+			{
+				<picture>
+					<source srcset="@image?.GetCropUrl(width: 1600, height: 560)" media="(min-width: 1440px)" />
+					<source srcset="@image?.GetCropUrl(width: 1200, height: 420)" media="(min-width: 1024px)" />
+					<source srcset="@image?.GetCropUrl(width: 800, height: 400)" media="(min-width: 768px)" />
+					<source srcset="@mobileImage?.GetCropUrl(width: 600, height: 300)" media="(min-width: 480px)" />
+					<img src="@mobileImage?.GetCropUrl(width: 460, height: 230)" alt="" />
+				</picture>
+			}
+		</div>
+		<div class="hero__content">
+			<div class="hero__content__inner border-radius @dropShadowClass" style="background-color: @Model?.BackgroundColor?.Color">
+				<h1 id="startpage-heading" class="@headingStyleClass @headingColorClass">@Html.ReplaceLineBreaks(heading ?? "")</h1>
+				@if (!string.IsNullOrWhiteSpace(Model?.Preamble))
+				{
+					<p class="hero__preamble @textSize @textColorClass">@Html.ReplaceLineBreaks(Model?.Preamble ?? "")</p>
+				}
+				@if (Model?.Buttons != null && Model.Buttons.Any())
+				{
+					foreach (var button in Model.Buttons)
+					{
+						Button? item = button?.Content as Button;
+						<partial name="./Partials/blocklist/Components/Button" model="item" />
+					}
+				}
+			</div>
+		</div>
+	}
+	else
+	{
+		<div class="hero__no-image border-radius @dropShadowClass" style="background-color: @Model?.BackgroundColor?.Color">
+			<div class="hero__no-image__inner">
+				<h1 id="startpage-heading" class="@headingStyleClass @headingColorClass">@Html.ReplaceLineBreaks(heading ?? "")</h1>
+				@if (!string.IsNullOrWhiteSpace(Model?.Preamble))
+				{
+					<p class="hero__preamble @textSize @textColorClass">@Html.ReplaceLineBreaks(Model?.Preamble ?? "")</p>
+				}
+				@if (Model?.Buttons != null && Model.Buttons.Any())
+				{
+					foreach (var button in Model.Buttons)
+					{
+						Button? item = button?.Content as Button;
+						<partial name="./Partials/blocklist/Components/Button" model="item" />
+					}
+				}
+			</div>
+		</div>
+	}
+</section>

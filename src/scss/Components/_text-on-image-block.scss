@@ -1,0 +1,49 @@
+@use '../Abstracts/mixins' as m;
+@use '../Abstracts/variables' as v;
+
+.text-on-image-block {
+    position: relative;
+    overflow: hidden;
+
+    &__image-container {
+        width: 100%;
+        height: 480px;
+
+        @media screen and (v.$query-tiny) {
+            height: 560px;
+        }
+        @media screen and (v.$query-small) {
+            height: 480px;
+        }
+        @media screen and (v.$query-medium) {
+            height: 400px;
+        }
+        @media screen and (v.$query-large) {
+            height: 320px;
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__text-container {
+        @include m.absolute-cover;
+        @include m.center-content;
+        
+        & {
+            padding: 16px;
+            flex-flow: column;
+            gap: 8px;
+        }
+
+        h2, .rte-text, .button {
+            margin: 0;
+        }
+        h2, .rte-text {
+            max-width: 640px;
+        }
+    }
+}

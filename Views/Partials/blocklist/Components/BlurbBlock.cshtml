@@ -1,0 +1,109 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.BlurbBlock>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models.Blocks;
+@using SliceByAlice;
+@using SliceByAlice.Extensions;
+
+@{
+    string? headingSize = Model?.GetHeadingSize();
+    string? headingColor = Model?.GetHeadingColorClass();
+    string? headingStyleClass = Model?.GetHeadingStyle();
+    string? textSize = Model?.GetTextSize();
+    string? textColorClass = Model?.GetTextColorClass();
+
+    bool hasHeading = !string.IsNullOrWhiteSpace(Model?.Heading);
+
+    BlockListModel? blurbs = Model?.Blurbs;
+    string? gridClass = blurbs != null && blurbs.Count() > 0 ? $"grid grid--{blurbs.Count()}" : null;
+}
+
+<div class="container">
+    <div class="block__heading">
+        @if (hasHeading)
+        {
+            <h2 class="@headingSize @headingStyleClass @headingColor" id="@Model?.Heading?.ToUrlSegment()">@Model?.Heading</h2>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model?.Preamble))
+        {
+            <p class="@textSize @textColorClass">@Html.ReplaceLineBreaks(Model.Preamble)</p>
+        }
+    </div>
+    <div class="block__inner">
+        <ul class="@gridClass blurb-block__grid">
+            @if (blurbs != null)
+            {
+                string? blurbHeadingSize = "";
+                string? blurbHeadingColor = "";
+                string? blurbHeadingStyleClass = "";
+                string? blurbTextSize = "";
+                string? blurbTextColor = "";
+                string? backgroundColor = "";
+                string? borderRadius = "";
+                string? dropShadowClass = "";
+
+                foreach (BlockListItem blurb in blurbs)
+                {
+                    Blurb? item = blurb?.Content as Blurb;
+                    if (item == null) continue;
+
+                    blurbHeadingSize = !string.IsNullOrWhiteSpace(item?.GetHeadingSize()) ? item?.GetHeadingSize() : blurbHeadingSize;
+                    blurbHeadingColor = !string.IsNullOrWhiteSpace(item?.GetHeadingColorClass()) ? item?.GetHeadingColorClass() : blurbHeadingColor;
+                    blurbHeadingStyleClass = !string.IsNullOrWhiteSpace(item?.GetHeadingStyle()) ? item?.GetHeadingStyle() : blurbHeadingStyleClass;
+                    blurbTextSize = !string.IsNullOrWhiteSpace(item?.GetTextSize()) ? item?.GetTextSize() : blurbTextSize;
+                    blurbTextColor = !string.IsNullOrWhiteSpace(item?.GetTextColorClass()) ? item?.GetTextColorClass() : blurbTextColor;
+                    backgroundColor = !string.IsNullOrWhiteSpace(item?.BackgroundColor?.Color) ? item?.BackgroundColor?.Color : backgroundColor;
+                    borderRadius = !string.IsNullOrWhiteSpace(item?.BorderRadius) ? item?.BorderRadius : borderRadius;
+                    dropShadowClass = !string.IsNullOrWhiteSpace(item?.GetDropShadowClass()) ? item?.GetDropShadowClass() : dropShadowClass;
+                    
+                    string? linkDescribedBy = item?.Link?.Target == "_blank" ? "target-blank" : null;
+                    string? linkRel = item?.Link?.Target == "_blank" ? "noopener noreferrer" : null;
+
+                    <li class="grid__card" style="outline-color: @backgroundColor;" >
+                        <a  
+                            class="inner inner--is-link @dropShadowClass"
+                            href="@item?.Link?.Url" 
+                            target="@item?.Link?.Target"
+                            aria-describedby="@linkDescribedBy"
+                            rel="@linkRel"
+                            style="border-radius:@borderRadius; background-color:@backgroundColor;">
+                            @if (item?.Image != null)
+                            {
+                                <div class="grid__card__image" style="aspect-ratio: @(!string.IsNullOrWhiteSpace(item?.ImageRatio) ? item.ImageRatio : '1'); border-radius: @borderRadius;">
+                                    <img src="@item?.Image?.GetCropUrl(400, 400)" alt="@item?.Image?.Value("altText")" />
+                                </div>
+                            }
+                            <div class="grid__card__content">
+                                @if (hasHeading && !string.IsNullOrWhiteSpace(item?.Heading))
+                                {
+                                    <h3 class="grid__card__heading @blurbHeadingSize @blurbHeadingStyleClass @blurbHeadingColor">@item?.Heading</h3>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(item?.Heading))
+                                {
+                                    <h2 class="grid__card__heading @blurbHeadingSize @blurbHeadingStyleClass @blurbHeadingColor">@item?.Heading</h2>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item?.Text))
+                                {
+                                    <p class="grid__card__text @blurbTextSize @blurbTextColor">@Html.ReplaceLineBreaks(item.Text)</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item?.LinkText))
+                                {
+                                    string arrowStyle = !string.IsNullOrWhiteSpace(item?.ArrowStyle) ? item.ArrowStyle : "arrow-1";
+                                    <span class="grid__card__link-text @blurbTextSize @blurbTextColor">
+                                        @item?.LinkText
+
+                                        @if (arrowStyle != "no-arrow")
+                                        {
+                                            <span class="icon icon--arrow icon--arrow--@arrowStyle @(item?.GetSvgPathClass(blurbTextColor ?? "color--blue"))" aria-hidden="true">
+                                                <partial name="../../SVG/@(arrowStyle).cshtml" />
+                                            </span>
+                                        }
+                                    </span>
+                                }
+                            </div>
+                        </a>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</div>

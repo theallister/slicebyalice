@@ -1,0 +1,31 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@inject IUrlHelper UrlHelper;
+
+@{
+    Layout = null;
+    IPublishedContent? root = Model.Root();
+}
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SliceByAlice</title>
+     <style>
+        [x-cloak], [hidden] {
+            display: none !important;
+        }
+    </style>
+    <link rel="stylesheet" href="https://use.typekit.net/lzv4xdv.css">
+    <link rel="stylesheet" href="~/assets/css/styles.css">
+</head>
+<body  id="@Model?.ContentType.Alias">
+    <partial name="../Partials/_PrimaryNavigation.cshtml" />
+     <main class="page-content" id="content">
+        @RenderBody()
+    </main>
+    <partial name="../Partials/_Footer.cshtml" />
+    <script src="~/assets/js/main.js"></script>
+</body>
+</html>

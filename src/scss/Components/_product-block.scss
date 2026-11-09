@@ -1,0 +1,15 @@
+@use '../Abstracts/mixins' as m;
+@use '../Abstracts/variables' as v;
+
+.product-block {
+    &__products {
+        .container {
+            @media screen and (max-width: v.$width-medium) {
+                padding: 0;
+            }
+        }
+        .grid__card {
+            margin-top: 16px;
+        }
+    }
+}

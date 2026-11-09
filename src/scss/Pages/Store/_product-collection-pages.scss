@@ -1,0 +1,163 @@
+@use '../../Abstracts/variables' as v;
+@use '../../Abstracts/mixins' as m;
+
+.store {
+    &__section {
+        padding-top: 16px;
+        padding-bottom: 16px;
+
+        .grid__card {
+            outline-color: v.$color-green;
+            border-radius: 16px;
+
+            &:not(.swiper-slide) {
+                @media screen and (v.$query-small) {
+                    flex: calc(50% - 16px) 0 0;
+                }
+                @media screen and (v.$query-medium) {
+                    flex: calc(100%/3 - 16px) 0 0;
+                }
+            }
+
+            .inner {
+                border-radius: 16px;
+                background-color: white;
+            }
+            &__price {
+                display: flex;
+                flex-flow: row nowrap;
+                gap: 0;
+
+                &--amount {
+                    padding: 8px;
+                    text-align: center;
+                    flex: 50% 1 1;
+                    border: dashed 2px v.$color-yellow;
+                    letter-spacing: 0.05rem;
+                    font-size: clamp(1rem, 2.5vw, 1.25rem);
+                    
+                    &:last-child {
+                        border-left: none;
+                    }
+                }
+            }
+            &__content {
+                h2 {
+                    margin: 0;
+                }
+            }
+            &__text {
+                line-clamp: 3;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                display: -webkit-box;
+                overflow: hidden;
+            }
+            &__badge {
+                &--sale, &--new {
+                    @include m.center-content;
+
+                    & {
+                        color: v.$color-blue;
+                        font-family: v.$font-body;
+                        font-weight: v.$weight-bold;
+                        line-height: 1;
+                        font-size: 1.25rem;
+                        letter-spacing: 0.05rem;
+                        width: 64px;
+                        height: 64px;
+                        border-radius: 50%;
+                    }
+                }
+                &--sale {
+                    background-color: v.$color-yellow;
+                }
+                &--new {
+                    background-color: v.$color-green;
+                }
+            }
+        }
+    }
+    &__filter {
+        margin: 24px 0;
+        display: flex;
+        flex-flow: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 16px;
+
+        &__toggle {
+            @include m.reset-button;
+            @include m.center-content;
+
+            & {
+                flex-flow: row nowrap;
+                gap: 8px;
+                border: solid 1px v.$color-blue;
+                border-radius: 16px;
+                padding: 8px 16px;
+                transition: outline-offset v.$transition-fast;
+            }
+
+            &.open {
+                .icon {
+                    transform: rotate(180deg);
+                    margin-top: -4px;
+                }
+            }
+
+            &:hover, &:focus-visible {
+                outline: dashed 2px v.$color-blue;
+                outline-offset: 4px;
+            }
+
+            .label {
+                text-transform: uppercase;
+                letter-spacing: 0.05rem;
+                font-size: 1rem;
+                color: v.$color-blue;
+                font-family: v.$font-body;
+                cursor: pointer;
+            }
+
+            .icon {
+                display: block;
+                width: 16px;
+                height: 16px;
+            }
+        }
+        &__form {
+            display: flex;
+            flex-flow: column;
+            gap: 16px;
+
+            fieldset {
+                appearance: none;
+                -webkit-appearance: none;
+                border: none;
+                padding: 0;
+
+                legend {
+                    font-family: v.$font-body;
+                    font-size: 1rem;
+                    font-weight: v.$weight-bold;
+                    color: v.$color-blue;
+                }
+            }
+
+            &__item {
+                display: flex;
+                flex-flow: row nowrap;
+                align-items: center;
+                gap: 0;
+                margin: 0.5rem 0;
+
+                label {
+                    font-family: v.$font-body;
+                    font-size: 1rem;
+                    color: v.$color-blue;
+                }
+            }
+        }
+    }
+}

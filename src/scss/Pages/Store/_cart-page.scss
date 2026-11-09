@@ -1,0 +1,77 @@
+@use '../../Abstracts/variables' as v;
+@use '../../Abstracts/mixins' as m;
+
+.cart-page {
+    &__cart-list {
+        @include m.reset-list;
+
+        & {
+            background-color: white;
+            margin-top: 16px;
+        }
+
+        .cart-item {
+            flex-flow: row wrap;
+            gap: 16px;
+            border-radius: 0;
+
+            @media screen and (v.$query-medium) {
+                flex-wrap: nowrap;
+            }
+
+            &:not(:last-child) {
+                border-bottom: dashed 2px v.$color-green;
+            }
+
+            &__details {
+                text-align: center;
+                
+                &--price, &--name {
+                    text-align: left;
+                }
+                &--remove {
+                    text-align: right;
+                }
+
+                &--name {
+                    flex: calc(100% - 140px) 0 0;
+
+                    @media screen and (v.$query-small) {
+                        flex: 25% 1 1;
+                    }
+                }
+
+                &--price, &--quantity {
+                    @media screen and (v.$query-small) {
+                        flex: 0 0 120px;
+                        text-align: right;
+                    }
+                }
+                &--total, &--remove {
+                    @media screen and (v.$query-small) {
+                        flex: 0 0 80px;
+                        text-align: right;
+                        align-items: flex-end;
+                    }
+                }
+            }
+        }
+
+        &__item {
+            &--summary {
+                .button {
+                    background-color: v.$color-blue;
+                    color: v.$color-white;
+                    outline-color: v.$color-blue !important;
+                }
+                .icon {
+                    svg {
+                        path {
+                            stroke: v.$color-white;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

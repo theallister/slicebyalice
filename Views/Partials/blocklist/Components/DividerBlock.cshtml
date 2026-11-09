@@ -1,0 +1,9 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.DividerBlock>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+
+@{
+    string? borderType =  "border-top--" + Model?.Border;
+    string? borderColor = Model?.BorderColor?.Color;
+    int? borderWidth = (int?)Model?.BorderWidth;
+}
+<div class="divider-block @borderType" style="border-top-color:@borderColor; border-top-width:(@borderWidth)px;"></div>

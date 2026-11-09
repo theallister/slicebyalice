@@ -1,0 +1,75 @@
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels
+@model IEnumerable<ContentModels.Product>
+
+@if (Model != null && Model.Any())
+{
+    <div class="swiper swiper__products swiper__products--@Model.Count()" data-swiper-type="products">
+        <div class="swiper-wrapper">            
+            @foreach (var product in Model)
+            {
+                bool onSale = product?.Tag != null && product.Tag.Any(x => x.Name == "REA");
+                bool isNew = product?.CreateDate > DateTime.Now.AddDays(-30);
+
+                <div class="grid__card drop-shadow--small swiper-slide">
+                    <a href="@product?.Url()" class="inner inner--is-link">
+                        @if (product?.Image != null)
+                        {
+                            <div class="grid__card__image" style="aspect-ratio: 1">
+                                <img src="@product.Image?.GetCropUrl(width: 400, height: 400, quality: 80)" alt="@product.Image?.Name" />
+                            </div>
+                        }
+                        @if (onSale)
+                        {
+                            <span class="grid__card__badge grid__card__badge--right text--1 grid__card__badge--sale drop-shadow--small">REA</span>
+                        }
+                        @if (isNew)
+                        {
+                            <span class="grid__card__badge grid__card__badge--left text--1 grid__card__badge--new drop-shadow--small">NY</span>
+                        }
+                        <div class="grid__card__price">
+                            @if (product?.Price > 0)
+                            {
+                                <span class="grid__card__price--amount text--1 color--blue">@(product.Price)kr</span>
+                            }
+                            @if (product?.BuyTwoPrice > 0)
+                            {
+                                <span class="grid__card__price--amount text--1 color--blue">2 för @(product.BuyTwoPrice)kr</span>
+                            }
+                        </div>
+                        <div class="grid__card__content">
+                            <h2 class="heading--4 color--blue">@product?.Name</h2>
+                            @if (!string.IsNullOrWhiteSpace(product?.Preamble))
+                            {
+                                <p class="grid__card__text text--1 color--blue">@product?.Preamble</p>
+                            }
+                            <span class="grid__card__link-text text--1 color--blue">
+                                Visa produkten
+                                <span class="icon" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257.21 112.55">
+                                        <g>
+                                            <path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="12px" d="M4,45.49c79.88,5.54,160.17,5.22,240.01-.96"/>
+                                            <path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="12px" d="M154.04,4c30.67,17.7,64.36,30.17,99.17,36.69-20.44,20.26-38.3,43.12-53,67.86"/>
+                                        </g>
+                                    </svg>
+                                </span>
+                            </span>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+        <div class="swiper-navigation">
+            <button type="button" class="swiper-button-prev">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84.93 164.63" aria-hidden="true">
+                    <path fill="none" stroke="#221f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="16px" d="M4,4c22.97,26.39,48.82,50.27,76.93,71.1-24.86,24.69-45.32,53.79-60.15,85.54"/>
+                </svg>
+            </button>
+            <div class="swiper-pagination"></div>
+            <button type="button" class="swiper-button-next">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84.93 164.63" aria-hidden="true">
+                    <path fill="none" stroke="#221f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="16px" d="M4,4c22.97,26.39,48.82,50.27,76.93,71.1-24.86,24.69-45.32,53.79-60.15,85.54"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+}

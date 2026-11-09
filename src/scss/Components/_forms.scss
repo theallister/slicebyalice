@@ -1,0 +1,237 @@
+@use '../Abstracts/mixins' as m;
+@use '../Abstracts/variables' as v;
+
+.form {
+    &__row {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 16px 0;
+
+        &--2 {
+            .form__item {
+                flex: 1 1 100%;
+    
+                @media screen and (v.$query-small) {
+                    flex: 0 0 calc(50% - 8px);
+                }
+            }
+        }
+    }
+    &__fieldset {
+        appearance: none;
+        -webkit-appearance: none;
+        border: none;
+        margin: 0;
+        padding: 0;
+
+        &__legend {
+            margin: 0 0 0.5rem;
+        }
+
+        legend {
+            font-family: v.$font-body;
+            font-weight: v.$weight-bold;
+            font-size: clamp(1rem, 2.5vw, 1.125rem);
+        }
+    }
+    &__item {
+        width: 100%;
+
+        label {
+            font-size: 1rem;
+            font-family: v.$font-body;
+            font-weight: v.$weight-bold;
+            display: block;
+            margin: 0 0 0.5rem;
+        }
+        input {
+            @include m.reset-input;
+
+            & {
+                width: 100%;
+                transition: outline-offset v.$transition-fast;
+            }
+
+            &:focus-visible, &:focus {
+                outline-offset: 4px;
+                outline-style: dashed;
+                outline-width: 2px;
+            }
+
+            &[type="text"],
+            &[type="email"],
+            &[type="tel"] {
+                border-width: 2px;
+                border-style: solid;
+                border-radius: 4px;
+                padding: 8px;
+                font-family: v.$font-body;
+                font-size: 1rem;
+            }
+        }
+        textarea {
+            @include m.reset-input;
+
+            & {
+                width: 100%;
+                transition: outline-offset v.$transition-fast;
+                border-width: 2px;
+                border-style: solid;
+                border-radius: 4px;
+                padding: 8px;
+                font-family: v.$font-body;
+                font-size: 1rem;
+            }
+
+            &:focus-visible, &:focus {
+                outline: dashed 2px v.$color-blue;
+                outline-offset: 4px;
+            }
+        }
+    }
+    &__checkbox, &__radio {
+        position: relative;
+        overflow: visible;
+        width: 0px;
+        height: 0px;
+        margin: 16px;
+
+        &::after {
+            position: absolute;
+            top: -8px;
+            left: -16px;
+            content: '';
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            border: solid 2px v.$color-blue;
+            border-radius: 4px;
+            background-color: v.$color-white;
+            background-size: 80%;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+            transition: outline-offset v.$transition-fast;
+        }
+
+        &:checked, &.checked, &[checked] {
+            &::after {
+                background-color: v.$color-blue;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'%3E%3Cg%3E%3Cpath fill='none' stroke='%23F4F1DE' stroke-linecap='round' stroke-linejoin='round' stroke-width='18px' d='M4,78.87c13.15,21.25,26.3,42.51,39.45,63.76C77.9,97.91,110.34,51.63,140.64,4'/%3E%3C/g%3E%3C/svg%3E");
+            }
+        }
+
+        &:focus-visible, &:focus {
+            &, input {
+                outline: none;
+            }
+            &::after {
+                outline: dashed 2px v.$color-blue;
+                outline-offset: 4px;
+            }
+        }
+    }
+    &__radio {
+        &::after {
+            border-radius: 50%;
+        }
+    }
+    &__radio-list {
+        display: flex;
+        gap: 8px; 
+
+        &--horizontal {
+            flex-flow: row wrap;
+        }
+        &--vertical {
+            flex-flow: column;
+        }
+        &--center {
+            justify-content: center;
+            align-items: center;
+        }
+    }
+    &__radio--button {
+        @include m.reset-button;
+
+        &:not(.form__radio--button--disabled) {
+            @include m.button-outline;
+        }
+
+        & {
+            position: relative;
+            font-family: v.$font-body;
+            color: v.$color-blue;
+            border: solid 2px v.$color-blue;
+            border-radius: 32px;
+            line-height: 1;
+            padding: 8px 16px;
+        }
+
+        input {
+            width: 0px;
+            height: 0px;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+        }
+
+        &--selected {
+            background-color: v.$color-blue;
+            color: v.$color-white;
+        }
+
+        &__controls {
+            button {
+                @include m.reset-button;
+                @include m.button-outline;
+
+                & {
+                    margin-top: 8px;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 50%;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: 16px;
+                    background-color: v.$color-blue;
+                }
+
+                &.remove {
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 85.56 12.69'%3E%3Cpath fill='none' stroke='%23F4F1DE' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M4,4c25.59,4.98,51.74,6,77.56,3.04'/%3E%3C/svg%3E");
+                }
+                &.add {
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 83.83 101.57'%3E%3Cpath fill='none' stroke='%23F4F1DE' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M44.3,4c-3.2,31.07-3.87,62.39-2,93.57'/%3E%3Cpath fill='none' stroke='%23F4F1DE' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M4,53.11c24.92-5.07,50.42-7.23,75.83-6.43'/%3E%3C/svg%3E");
+                }
+            }
+        }
+    }
+    &__submit {
+        @include m.button-outline;
+
+        & {
+            cursor: pointer;
+        }
+    }
+    &__item {
+        &__input--invalid {
+            outline-color: v.$color-red !important;
+            border-color: v.$color-red !important;
+            background-repeat: no-repeat !important;
+            background-position: calc(100% - 8px) center !important;
+            background-size: 24px !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 141.25 120.19'%3E%3Cpath fill='none' stroke='%23b84424' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M76.97,6C47.24,36.1,23.06,71.66,6,110.37c43.08,1.27,86.17,2.55,129.25,3.82-17.51-34.76-35.01-69.53-58.28-108.19Z'/%3E%3Cpath fill='none' stroke='%23b84424' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M69.62,71.71c1.13-12.42,2.26-24.85,3.39-37.27'/%3E%3Cpath fill='none' stroke='%23b84424' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M68.6,91.41c1.82.47,2.74,2.98,1.64,4.51s-3.76,1.48-4.8-.09-.03-4.04,1.8-4.45'/%3E%3C/svg%3E") !important;
+        }
+        &__error-message {
+            font-family: v.$font-body;
+            display: block;
+            margin: 0.5rem 0;
+            text-align: right;
+        }
+    }
+}

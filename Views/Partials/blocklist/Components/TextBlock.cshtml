@@ -1,0 +1,38 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.TextBlock>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using SliceByAlice;
+
+@{
+    string? headingSize = Model?.GetHeadingSize();
+    string? headingColorClass = Model?.GetHeadingColorClass();
+    string? headingStyleClass = Model?.GetHeadingStyle();
+    string? textSize = Model?.GetTextSize();
+    string? textColorClass = Model?.GetTextColorClass();
+
+    string? boxBackgroundColor = Model?.BackgroundColorBox?.Color;
+    string? boxBackgroundClass = !string.IsNullOrWhiteSpace(boxBackgroundColor) ? "text-block__inner--background" : null;
+    string? boxDropShadow = Model?.GetDropShadowClass();
+}
+<div class="container">
+    <div class="text-block__inner @(boxBackgroundClass) @(boxDropShadow)" style="background-color: @(boxBackgroundColor);">
+        @if (!string.IsNullOrWhiteSpace(Model?.Heading))
+        {
+            <h2 class="@headingSize @headingStyleClass @headingColorClass">
+                @Model?.Heading
+            </h2>
+        }
+        <div class="rte-text @textSize @textColorClass">
+            @Model?.Text
+        </div>
+        @if (Model?.Buttons != null && Model.Buttons.Any())
+        {
+            <div class="buttons-container buttons--stacked">
+                @foreach (var button in Model.Buttons)
+				{
+					Button? item = button?.Content as Button;
+					<partial name="./Button.cshtml" model="item" />
+				}
+            </div>
+        }
+    </div>
+</div>

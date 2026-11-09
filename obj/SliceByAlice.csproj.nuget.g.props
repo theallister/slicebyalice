@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
+    <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">/Users/alicegothberg/.nuget/packages/</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">/Users/alicegothberg/.nuget/packages/</NuGetPackageFolders>
+    <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">7.0.0</NuGetToolVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <SourceRoot Include="/Users/alicegothberg/.nuget/packages/" />
+  </ItemGroup>
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.extensions.telemetry.abstractions/10.8.0/buildTransitive/net8.0/Microsoft.Extensions.Telemetry.Abstractions.props" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.telemetry.abstractions/10.8.0/buildTransitive/net8.0/Microsoft.Extensions.Telemetry.Abstractions.props')" />
+    <Import Project="$(NuGetPackageRoot)utpro.feature.searchplus/1.0.2/buildTransitive/uTPro.Feature.SearchPlus.props" Condition="Exists('$(NuGetPackageRoot)utpro.feature.searchplus/1.0.2/buildTransitive/uTPro.Feature.SearchPlus.props')" />
+    <Import Project="$(NuGetPackageRoot)umbraco.cms.staticassets/18.1.1/buildTransitive/Umbraco.Cms.StaticAssets.props" Condition="Exists('$(NuGetPackageRoot)umbraco.cms.staticassets/18.1.1/buildTransitive/Umbraco.Cms.StaticAssets.props')" />
+    <Import Project="$(NuGetPackageRoot)umbraco.cms.targets/18.1.1/buildTransitive/Umbraco.Cms.Targets.props" Condition="Exists('$(NuGetPackageRoot)umbraco.cms.targets/18.1.1/buildTransitive/Umbraco.Cms.Targets.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.entityframeworkcore/10.0.10/buildTransitive/net10.0/Microsoft.EntityFrameworkCore.props" Condition="Exists('$(NuGetPackageRoot)microsoft.entityframeworkcore/10.0.10/buildTransitive/net10.0/Microsoft.EntityFrameworkCore.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.codeanalysis.analyzers/5.3.0/buildTransitive/Microsoft.CodeAnalysis.Analyzers.props" Condition="Exists('$(NuGetPackageRoot)microsoft.codeanalysis.analyzers/5.3.0/buildTransitive/Microsoft.CodeAnalysis.Analyzers.props')" />
+    <Import Project="$(NuGetPackageRoot)umbraco.cms.developmentmode.backoffice/18.1.1/buildTransitive/Umbraco.Cms.DevelopmentMode.Backoffice.props" Condition="Exists('$(NuGetPackageRoot)umbraco.cms.developmentmode.backoffice/18.1.1/buildTransitive/Umbraco.Cms.DevelopmentMode.Backoffice.props')" />
+    <Import Project="$(NuGetPackageRoot)our.umbraco.conditionaldisplayers/16.8.0/buildTransitive/Our.Umbraco.ConditionalDisplayers.props" Condition="Exists('$(NuGetPackageRoot)our.umbraco.conditionaldisplayers/16.8.0/buildTransitive/Our.Umbraco.ConditionalDisplayers.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgLucene_Net Condition=" '$(PkgLucene_Net)' == '' ">/Users/alicegothberg/.nuget/packages/lucene.net/4.8.0-beta00017</PkgLucene_Net>
+    <PkgMicrosoft_CodeAnalysis_Analyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_Analyzers)' == '' ">/Users/alicegothberg/.nuget/packages/microsoft.codeanalysis.analyzers/5.3.0</PkgMicrosoft_CodeAnalysis_Analyzers>
+  </PropertyGroup>
+</Project>

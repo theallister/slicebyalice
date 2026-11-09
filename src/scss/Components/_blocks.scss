@@ -1,0 +1,51 @@
+@use '../Abstracts/variables' as v;
+@use '../Abstracts/mixins' as m;
+
+@use './blurb-block';
+@use './faq-block';
+@use './product-block';
+@use './text-block';
+@use './text-image-block';
+@use './text-on-image-block';
+
+.block {
+    &.margin--small {
+        margin-top: 16px;
+        margin-bottom: 16px;
+    }
+    &.margin--medium {
+        margin-top: 32px;
+        margin-bottom: 32px;
+    }
+    &.margin--large {
+        margin-top: 64px;
+        margin-bottom: 64px;
+    }
+
+    &--background {
+        &:not(.block--textimageblock) {
+            padding-top: 24px;
+            padding-bottom: 24px;
+            
+            @media screen and (v.$query-small) {
+                padding-top: 40px;
+                padding-bottom: 40px;
+            }
+            @media screen and (v.$query-medium) {
+                padding-top: 56px;
+                padding-bottom: 56px;
+            }
+            @media screen and (v.$query-large) {
+                padding-top: 72px;
+                padding-bottom: 72px;
+            }
+        }
+    }
+    &__heading {
+        max-width: v.$width-small;
+
+        h2, h3 {
+            margin-top: 0;
+        }
+    }
+}

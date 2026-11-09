@@ -1,0 +1,41 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.Button>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models;
+@using SliceByAlice
+
+@{
+    string? buttonLabel = !string.IsNullOrWhiteSpace(Model?.Text) ? Model.Text : Model?.Link?.Name;
+    Link? link = Model?.Link;
+    string? backgroundColor = Model?.BackgroundColor?.Color;
+    string? backgroundColorClass = Model?.GetBackgroundColorClass();
+    string? textColorClass = Model?.GetTextColorClass();
+    string? svgColorClass = Model?.GetSvgPathClass(textColorClass ?? "color--blue");
+    string? linkDescribedBy = link?.Target == "_blank" ? "target-blank" : "";
+    string? linkRel = link?.Target == "_blank" ? "noopener noreferrer" : "";
+    string? textStyleClass = Model?.GetTextStyle();
+    bool showArrow = Model != null && Model.ShowArrow;
+}
+
+@if (!string.IsNullOrWhiteSpace(buttonLabel) && link?.Url != null)
+{
+    <a
+        class="button @textStyleClass @backgroundColorClass @textColorClass"
+        href="@link?.Url"
+        target="@link?.Target"
+        aria-describedby="@linkDescribedBy"
+        rel="@linkRel"
+        style="outline-color:@backgroundColor">
+        <span class="label">
+            @buttonLabel
+        </span>
+        @if (showArrow && Model?.ArrowStyle != "no-arrow")
+        {
+            string arrowStyle = !string.IsNullOrWhiteSpace(Model?.ArrowStyle) ? Model.ArrowStyle : "arrow-1";
+
+             <span class="icon icon--arrow icon--arrow--@arrowStyle @(Model?.GetSvgPathClass(textColorClass ?? "color--blue"))" aria-hidden="true">
+                <partial name="../../SVG/@(arrowStyle).cshtml" />
+            </span>
+        }
+    </a>
+}
+

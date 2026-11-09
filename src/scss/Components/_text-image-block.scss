@@ -1,0 +1,159 @@
+@use '../Abstracts/variables' as v;
+@use '../Abstracts/mixins' as m;
+
+.text-image-block {
+    &__container {
+        display: flex;
+        flex-flow: column;
+        overflow: hidden;
+        
+        @media screen and (v.$query-small) {
+            flex-flow: row nowrap;
+            align-items: center;
+        }
+
+        &--right {
+            @media screen and (v.$query-small) {
+                flex-flow: row-reverse nowrap;
+            }
+        }
+    }
+    &__image {
+        flex: 100% 0 0;
+        height: 360px;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            line-height: 0;
+        }
+
+        &--frame {
+            border-width: 12px;
+            border-style: solid;
+            border-radius: 8px;
+
+            img {
+                transform: scale(1.025);
+            }
+        }
+
+        @media screen and (v.$query-small) {
+            flex: 50% 0 0;
+            height: 420px;
+        }
+    }
+    &__collage {
+        height: 360px;
+        position: relative;
+
+        @media screen and (v.$query-tiny) {
+            height: 400px;
+        }
+
+        @media screen and (v.$query-small) {
+            flex: 50% 0 0;
+            height: 480px;
+        }
+
+        a {
+            display: block;
+            aspect-ratio: 450/320;
+            position: absolute;
+            width: 65%;
+            height: auto;
+            transition: outline-offset v.$transition-fast;
+            border-radius: 8px;
+
+            @media screen and (v.$query-tiny) {
+                width: 50%;
+            }
+
+            @media screen and (v.$query-small) {
+                aspect-ratio: 1;
+                width: 60%;
+            }
+
+            @media screen and (v.$query-medium) {
+                aspect-ratio: 450/320;  
+                width: 55%;
+            }
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+
+            &:hover, &:focus-visible {
+                outline-offset: 4px;
+                outline-width: 2px;
+                outline-style: dashed;
+            }
+        }
+
+        &--3 {
+            a {
+                &:nth-child(1) {
+                    top: 16px;
+                    left: 16px;
+                    transform: rotate(-5deg);
+                }
+                &:nth-child(2) {
+                    top: 15%;
+                    right: 16px;
+                    transform: rotate(5deg);
+
+                    @media screen and (v.$query-tiny) {
+                        top: 25%;
+                    }
+                    
+                    @media screen and (v.$query-small) {
+                        top: 20%;
+                    }
+                    
+                    @media screen and (v.$query-medium) {
+                        top: 7.5%;
+                    }
+                }
+                &:nth-child(3) {
+                    bottom: 16px;
+                    left: 20%;
+                    transform: rotate(-2.5deg);
+
+                    @media screen and (v.$query-small) {
+                        transform: rotate(-7.5deg);
+                    }
+                }
+
+                &:hover, &:focus-visible {
+                    outline-offset: 4px;
+                    outline-color: v.$color-blue;
+                    z-index: 80;
+                }
+            }
+        }
+    }
+    &__content {
+        padding: 16px;
+        display: flex;
+        flex-flow: column;
+        gap: 8px;
+
+        h2, p, .buttons-container {
+            margin: 0;
+        }
+
+        @media screen and (v.$query-small) {
+            flex: 50% 0 0;
+            padding: 24px;
+        }
+        @media screen and (v.$query-medium) {
+            padding: 32px;
+        }
+    }
+}

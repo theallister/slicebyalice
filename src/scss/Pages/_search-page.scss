@@ -1,0 +1,169 @@
+@use '../Abstracts/mixins' as m;
+@use '../Abstracts/variables' as v;
+
+.search-page {
+    &__header {
+        &__inner {
+            background-color: v.$color-yellow;
+            padding: 24px 16px;
+            border-radius: 16px;
+
+            @media screen and (v.$query-small) {
+                padding: 32px 24px;
+            }
+
+        }
+        &__heading {
+            margin: 0 0 1.5rem;
+            text-align: center;
+            color: v.$color-blue;
+
+            span {
+                text-decoration: underline;
+                text-underline-offset: 4px;
+                text-decoration-color: v.$color-red;
+            }
+        }
+        &__form {
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            flex-flow: row nowrap;
+            gap: 16px;
+            justify-content: center;
+            align-items: center;
+
+        }
+        &__input {
+            font-size: 1.125rem;
+            font-weight: 400;
+            border: none;
+            border-radius: 40px;
+            flex: 1 1 80%;
+            padding: 16px;
+            outline: none;
+            background-color: v.$color-white;
+            color: v.$color-blue;
+            font-family: v.$font-body;
+            
+            &:focus {
+                outline: 2px dashed v.$color-white;
+                outline-offset: 4px;
+            }
+        }
+        &__submit {
+            @include m.reset-button;
+            
+            & {
+                flex: 0 0 10%;
+                height: 40px;
+
+                svg {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+
+                    path {
+                        stroke: v.$color-blue;
+                    }
+                }
+            }
+            
+        }
+    }
+    &__results {
+        &__count {
+            font-size: 1.125rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        &__list {
+            @include m.reset-list;
+
+            & {
+                display: flex;
+                flex-flow: column;
+                gap: 16px;
+            }
+        }
+        &__item {
+            border: 2px dashed v.$color-green;
+            border-radius: 16px;
+
+            &__inner {
+                text-decoration: none;
+                display: flex;
+                flex-flow: column;
+                gap: 8px;
+
+                @media screen and (v.$query-small) {
+                    flex-flow: row nowrap;
+                    gap: 16px;
+                    align-items: center;
+                }
+
+                &:hover, &:focus-visible {
+                    img {
+                        transform: scale(1.05);
+                    }
+                    .search-page__results__item__link-text {
+                        gap: 16px;
+                    }
+                }
+            }
+
+            &__image {
+                aspect-ratio: 2;
+                overflow: hidden;
+                border-radius: 16px 16px 0 0;
+                max-width: 320px;
+                max-height: 320px;
+
+                @media screen and (v.$query-small) {
+                    aspect-ratio: 1;
+                    border-radius: 16px 0 0 16px;
+                }
+
+                img {
+                    transition: transform v.$transition-regular;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+            }
+            &__content {
+                padding: 16px;
+            }
+            &__heading {
+                margin: 0;
+                font-size: 1.25rem;
+                font-weight: v.$weight-bold;
+                color: v.$color-blue;
+            }
+            &__summary {
+                font-size: 1rem;
+                color: v.$color-blue;
+            }
+            &__link-text {
+                display: flex;
+                flex-flow: row nowrap;
+                align-items: center;
+                gap: 8px;
+                transition: gap v.$transition-regular;
+
+                .label {
+                    color: v.$color-blue;
+                    font-size: 1.125rem;
+                    font-family: v.$font-typewriter;
+                }
+                .icon {
+                    display: block;
+                    width: 32px;
+                    height: 24px;
+                }
+            }
+        }
+    }
+}

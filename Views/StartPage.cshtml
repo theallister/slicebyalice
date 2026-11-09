@@ -1,0 +1,9 @@
+﻿@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.StartPage>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@{
+	Layout = "./Shared/_Layout.cshtml";
+}
+<partial name="./Partials/singleblock/Components/HeroBlock" model="Model?.Hero?.Content" />
+@Html.GetBlockListHtml(Model?.BlockList)

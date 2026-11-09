@@ -1,0 +1,70 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.TextImageBlock>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models;
+@using SliceByAlice;
+
+@{
+    string? headingSize = Model?.GetHeadingSize();
+    string? headingColor = Model?.GetHeadingColorClass();
+    string? headingStyleClass = Model?.GetHeadingStyle();
+    string? textSize = Model?.GetTextSize();
+    string? textColorClass = Model?.GetTextColorClass();
+    string? dropShadowClass = Model?.GetDropShadowClass();
+    string? backgroundColorClass = Model?.GetBackgroundColorClass();
+    string? imageFrame = Model?.FrameColor?.Color;
+    string borderRadius = !string.IsNullOrWhiteSpace(Model?.BorderRadius) ? Model.BorderRadius : "";
+    string imageFrameClass = !string.IsNullOrWhiteSpace(imageFrame) ? "text-image-block__image--frame" : "";
+    string imagePositionClass = Model?.ImagePosition == "right" ? "text-image-block__container--right" : "";
+}
+
+<div class="container text-image-block">
+    <div class="text-image-block__container @imagePositionClass @dropShadowClass @backgroundColorClass" style="border-radius: @borderRadius;">
+        @if (Model?.Images != null && Model.Images.Count() == 1)
+        {
+            MediaWithCrops? image = Model.Images.First();
+
+            <div class="text-image-block__image @imageFrameClass" style="border-color: @imageFrame;">
+                <picture>
+                    <source srcset="@image?.GetCropUrl(width: 900, height: 450)" media="(min-width: 1440px)" />
+                    <source srcset="@image?.GetCropUrl(width: 500, height: 500)" media="(min-width: 1000px)" />
+                    <source srcset="@image?.GetCropUrl(width: 720, height: 320)" media="(min-width: 720px)" />
+                    <img src="@image?.GetCropUrl(width: 450, height: 320)" alt="@(image?.Value<string>("altText"))" />
+                </picture>
+            </div>
+        }
+        else if (Model?.Images != null && Model.Images.Any())
+        {
+            <div class="text-image-block__collage text-image-block__collage--@(Model.Images.Count())">
+                @foreach (MediaWithCrops image in Model.Images)
+                {
+                    string? frameString = !string.IsNullOrWhiteSpace(imageFrame) ? "border-color: " + imageFrame + "; border-width: 12px; border-style: solid; border-radius: 8px;" : "";
+                    string? outlineColorClass = Model?.GetOutlineColorClass(textColorClass ?? "");
+                    <a href="@image?.Url()" class="@outlineColorClass" data-fancybox="gallery-text-image-block" style="@frameString">
+                        <img src="@image?.GetCropUrl(width: 450, height: 320)" alt="@(image?.Value<string>("altText"))" />
+                    </a>
+                }
+            </div>
+        }
+        <div class="text-image-block__content">
+            @if (!string.IsNullOrWhiteSpace(Model?.Heading))
+            {
+                <h2 class="@headingSize @headingColor @headingStyleClass">@Model.Heading</h2>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model?.Text?.ToString()))
+            {
+                <div class="rte-text @textSize @textColorClass">@Model.Text</div>
+            }
+            @if (Model?.Buttons != null && Model.Buttons.Any())
+            {
+                <div class="text-image-block__buttons buttons--row buttons-container">
+                @foreach (var button in Model.Buttons)
+                {
+                    Button? item = button?.Content as Button;
+                    <partial name="./Partials/blocklist/Components/Button" model="item" />
+                }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

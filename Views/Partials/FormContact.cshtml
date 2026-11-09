@@ -1,0 +1,67 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.FormBlock>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using SliceByAlice;
+@using SliceByAlice.Extensions;
+
+@{
+    string? headingSize = Model?.GetHeadingSize();
+    string? headingColor = Model?.GetHeadingColorClass();
+    string? headingStyleClass = Model?.GetHeadingStyle();
+    string? textSize = Model?.GetTextSize();
+    string? textColorClass = Model?.GetTextColorClass();
+    string? iconStrokeClass = Model?.GetSvgPathClass(textColorClass ?? "");
+    string? outlineColorClass = Model?.GetOutlineColorClass(textColorClass ?? "");
+    string? borderColorClass = Model?.GetBorderColorClass(textColorClass ?? "");
+    bool hasHeading = !string.IsNullOrWhiteSpace(Model?.Heading);
+
+    string buttonClass = "";
+    switch(textColorClass)
+    {
+        case "color--blue":
+            buttonClass = "button--blue";
+            break;
+        case "color--red":
+            buttonClass = "button--red";
+            break;
+        case "color--green":
+            buttonClass = "button--green";
+            break;
+        case "color--yellow":
+            buttonClass = "button--yellow";
+            break;
+        case "color--white":
+            buttonClass = "button--white";
+            break;
+        case "color--complete-white":
+            buttonClass = "button--complete-white";
+            break;
+    }
+}
+
+<form class="form form--contact" x-data="form">
+    <div class="form__row form__row--2">
+        <div class="form__item">
+            <label class="@textColorClass @textSize" for="firstName">Namn</label>
+            <input class="@textColorClass @textSize @borderColorClass" type="text" id="firstName" name="firstName" autocomplete="name" placeholder="Namn" />
+        </div>
+        <div class="form__item">
+            <label class="@textColorClass @textSize" for="email">E-post*</label>
+            <input class="@textColorClass @textSize @borderColorClass" type="email" id="email" name="email" autocomplete="email" placeholder="E-post" required @@blur="validate($el); updateErrors($el)" :class="errors.email && 'form__item__input--invalid'" />
+            <span class="form__item__error-message" x-text="'Du måste ange en giltig e-postadress'" x-show="errors.email"></span>
+        </div>
+    </div>
+    <div class="form__row">
+        <div class="form__item">
+            <label class="@textColorClass @textSize" for="message">Ditt meddelande:</label>
+            <textarea class="@textColorClass @textSize @borderColorClass" id="message" name="message" placeholder="Skriv ditt meddelande här..."></textarea>
+        </div>
+    </div>
+    <div class="form__row form__row--submit">
+        <button type="submit" class="button form__submit @buttonClass @outlineColorClass">
+            Skicka meddelande
+            <span class="icon icon--arrow" aria-hidden="true">
+                <partial name="../Partials/SVG/arrow-twirl-2.cshtml" />
+            </span>
+        </button>
+    </div>
+</form>

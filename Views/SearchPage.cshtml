@@ -1,0 +1,102 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.SearchPage>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Examine
+@using SliceByAlice.Models
+@using SliceByAlice.Services
+@using Umbraco.Cms.Core
+@using uTPro.Feature.SearchPlus.Services
+@inject ISearchService SearchService
+
+@{
+    Layout = "./Shared/_Layout.cshtml";
+
+    string? q = Context.Request.Query["query"].FirstOrDefault() ?? "";
+    IReadOnlyList<SearchResultDto> results = SearchService.Search(q);
+}
+
+<section class="container search-page__header">
+	<div class="search-page__header__inner shadow-regular">
+		@if (!string.IsNullOrWhiteSpace(q))
+		{
+			<h1 class="heading--xl search-page__header__heading">Sökresultat för "<span class="search-page__header__query">@q</span>"</h1>
+		}
+		else
+		{
+			<h1 class="heading--xl search-page__header__heading">Sök på sidan</h1>
+		}
+		<form method="get" class="search-page__header__form">
+			<label for="search-page-form" class="sr-only">Sök</label>
+			<input 
+				type="text" 
+				id="search-page-form"
+				name="query" 
+				value="@q" 
+				class="search-page__header__input" 
+				placeholder="Sök...">
+			<button type="submit" class="search-page__header__submit">
+				<span class="sr-only">Sök</span>
+				<span class="icon icon--arrow" aria-hidden="true">
+					<partial name="./Partials/SVG/arrow-1.cshtml" />
+				</span>
+			</button>
+		</form>
+	</div>
+</section>
+
+<section class="container search-page__results">
+	@if (results != null && results.Any())
+	{
+		<p class="search-page__results__count">
+			Din sökning på "<span class="search-page__results__query">@q</span>" gav @results.Count resultat.
+		</p>
+		<ul class="search-page__results__list">
+			@foreach (SearchResultDto result in results)
+			{
+				<li class="search-page__results__item">
+					<a href="@result?.Url" class="search-page__results__item__inner">
+						@if (!string.IsNullOrWhiteSpace(result?.ImageUrl))
+						{
+							<div class="search-page__results__item__image">
+								<img src="@result.ImageUrl" alt="@result.Name" />
+							</div>
+						}
+						<div class="search-page__results__item__content">
+							<h2 class="search-page__results__item__heading">@result?.Name</h2>
+							@if (!string.IsNullOrWhiteSpace(result?.Summary))
+							{
+								<p class="search-page__results__item__summary">@result?.Summary</p>
+							}
+							<span class="search-page__results__item__link-text">
+								<span class="label">
+									@getLinklabel(result?.ContentType ?? string.Empty)
+								</span>
+								<span class="icon icon--arrow" aria-hidden="true">
+									<partial name="./Partials/SVG/arrow-wave.cshtml" />
+								</span>
+							</span>
+						</div>
+					</a>
+				</li>
+			}
+		</ul>
+	}
+</section>
+
+@functions
+{
+	private string getLinklabel(string contentType)
+	{
+		switch (contentType)
+		{
+			case "Product":
+				return "Till produkten";
+			case "StartPage":
+				return "Till startsidan";
+			case "ProductCategory":
+			case "CategoryPage":
+				return "Till kategorin";
+			default:
+				return "Läs mer";
+		}
+	}
+}

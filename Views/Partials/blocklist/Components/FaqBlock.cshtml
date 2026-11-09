@@ -1,0 +1,62 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.FaqBlock>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using SliceByAlice;
+@using SliceByAlice.Extensions;
+@using Umbraco.Cms.Core.Models.Blocks;
+@{
+    string? headingSize = Model?.GetHeadingSize();
+    string? headingColor = Model?.GetHeadingColorClass();
+    string? headingStyleClass = Model?.GetHeadingStyle();
+    string? textSize = Model?.GetTextSize();
+    string? textColorClass = Model?.GetTextColorClass();
+    string? iconStrokeClass = Model?.GetSvgPathClass(textColorClass ?? "");
+    string? borderColorClass = Model?.GetBorderColorClass(textColorClass ?? "");
+    bool hasHeading = !string.IsNullOrWhiteSpace(Model?.Heading);
+}
+
+<div class="container faq-block">
+     <div class="block__heading">
+        @if (hasHeading)
+        {
+            <h2 class="@headingSize @headingStyleClass @headingColor" id="@Model?.Heading?.ToUrlSegment()">@Model?.Heading</h2>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model?.Preamble?.ToString()))
+        {
+            <div class="rte-text @textSize @textColorClass">@Model?.Preamble</div>
+        }
+        <ul class="faq-items" aria-describedby="@Model?.Heading?.ToUrlSegment()">
+            @if (Model?.FaqItems != null && Model.FaqItems.Any())
+            {
+                @foreach (BlockListItem faqItem in Model.FaqItems)
+                {
+                    HeadingAndInformation? item = faqItem?.Content as HeadingAndInformation;
+                    if (item == null) continue;
+
+                    <li class="faq-items__item @borderColorClass" :class="open && 'open'" x-data="{ open: false }">
+                        <button
+                            type="button"
+                            :class="open && 'open'"
+                            @@click="open = !open"
+                            :aria-expanded="open.toString()"
+                            aria-controls="faq-item-@item?.Heading?.ToUrlSegment()">
+                            @if (hasHeading)
+                            {
+                                <h3 class="@textColorClass">@item?.Heading</h3>
+                            }
+                            else
+                            {
+                                <h2 class="@textColorClass">@item?.Heading</h2>
+                            }
+                            <span class="icon icon--chevron-down @iconStrokeClass" aria-hidden="true">
+                                <partial name="../../SVG/chevron-down.cshtml" />
+                            </span>
+                        </button>
+                        <div class="faq-items__item-content" x-show="open" x-cloak id="faq-item-@item?.Heading?.ToUrlSegment()">
+                            <div class="rte-text text--1 @textColorClass">@item?.Text</div>
+                        </div>
+                    </li>
+                }
+            }
+            </ul>
+    </div>
+</div>

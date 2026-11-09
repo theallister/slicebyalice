@@ -1,0 +1,75 @@
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.Blocks
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
+@{
+    var root = Model?.AncestorOrSelf<StartPage>();
+}
+
+<p class="sr-only" id="target-blank">Öppnas i ny flik</p>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer__logo">
+            <a href="@root?.Url()" aria-label="Till startsidan">
+                <partial name="../Partials/SVG/_Logo.cshtml" />
+            </a>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(root?.FooterText))
+        {
+            <div class="footer__row footer__row--text">
+                <p class="color--blue text--125 text--regular">
+                    @Html.ReplaceLineBreaks(root.FooterText)
+                </p>
+            </div>
+        }
+                <div class="footer__row footer__row--socials">
+            <ul class="footer__links footer__links--socials">
+                @if (root?.FooterSocialMedia != null && root.FooterSocialMedia.Any())
+                {
+                    foreach (Link social in root.FooterSocialMedia)
+                    {
+                        string mediaType = "";
+
+                        switch (social?.Url)
+                        {
+                            case string url when url.Contains("instagram"):
+                                mediaType = "instagram";
+                                break;
+                            case string url when url.Contains("tiktok"):
+                                mediaType = "tiktok";
+                                break;
+                        }
+
+                        <li class="footer__link">
+                            <span class="icon icon--@mediaType">
+                                <partial name="../Partials/SVG/@(mediaType).cshtml" />
+                            </span>
+                            <a href="@social?.Url" target="_blank" rel="noopener noreferrer" aria-describedby="target-blank">
+                                @social?.Name
+                            </a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+        <div class="footer__row footer__row--links">
+            <ul class="footer__links">
+                @if (root?.FooterLinks != null && root.FooterLinks.Any())
+                {
+                    foreach (Link link in root.FooterLinks)
+                    {
+                        string? describedBy = link?.Target == "_blank" ? "target-blank" : null;
+                        string? rel = link?.Target == "_blank" ? "noopener noreferrer" : null;
+                        
+                        <li class="footer__link">
+                            <a href="@link?.Url" target="@link?.Target" rel="@rel" aria-describedby="@describedBy">
+                                @link?.Name
+                            </a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+</footer>

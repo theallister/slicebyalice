@@ -1,0 +1,70 @@
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.Product>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using SliceByAlice.Extensions
+
+@{
+    bool onSale = Model?.Tag != null && Model.Tag.Where(x => x.Name == "REA").Any();
+    bool isNew = Model?.CreateDate > DateTime.Now.AddDays(-30);
+
+    string categoryString = "";
+    string tagsString = "";	
+
+    if (Model?.Parent<ProductCategory>() != null)
+    {
+        categoryString = Model.Parent<ProductCategory>()?.Name?.ToUrlSegment() ?? "";
+    }
+    if (Model?.Tag != null)
+    {
+        tagsString = string.Join(",", Model.Tag.Select(x => x.Name?.ToUrlSegment()));
+    }
+
+    <li 
+        class="grid__card" 
+        x-show="showHideItem('@categoryString', '@tagsString')">
+        <a href="@Model?.Url()" class="inner inner--is-link">
+            @if (Model?.Image != null)
+            {
+                <div class="grid__card__image" style="aspect-ratio: 1">
+                    <img src="@Model.Image?.GetCropUrl(width: 400, height: 400, quality: 80)" alt="@Model.Image?.Name" />
+                </div>
+            }
+            @if (onSale)
+            {
+                <span class="grid__card__badge grid__card__badge--right text--1 grid__card__badge--sale drop-shadow--small">REA</span>
+            }
+            @if (isNew)
+            {
+                <span class="grid__card__badge grid__card__badge--left text--1 grid__card__badge--new drop-shadow--small">NY</span>
+            }
+            <div class="grid__card__price">
+                @if (Model?.Price > 0)
+                {
+                    <span class="grid__card__price--amount text--1 color--blue">@(Model.Price)kr</span>
+                }
+                @if (Model?.BuyTwoPrice > 0)
+                {
+                    <span class="grid__card__price--amount text--1 color--blue">2 för @(Model.BuyTwoPrice)kr</span>
+                }
+            </div>
+            <div class="grid__card__content">
+                <h2 class="heading--4 color--blue">@Model?.Name</h2>
+                @if (!string.IsNullOrWhiteSpace(Model?.Preamble))
+                {
+                    <p class="grid__card__text text--1 color--blue">@Model?.Preamble</p>
+                }
+                <span class="grid__card__link-text text--1 color--blue">
+                    Visa produkten
+                    <span class="icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257.21 112.55">
+                            <g>
+                                <path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="12px" d="M4,45.49c79.88,5.54,160.17,5.22,240.01-.96"/>
+                                <path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="12px" d="M154.04,4c30.67,17.7,64.36,30.17,99.17,36.69-20.44,20.26-38.3,43.12-53,67.86"/>
+                            </g>
+                        </svg>
+                    </span>
+                </span>
+            </div>
+        </a>
+    </li>
+}

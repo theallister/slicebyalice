@@ -1,0 +1,248 @@
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.Blocks
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@inject IUrlHelper UrlHelper;
+
+@{
+    StartPage? root = Model.Root() as StartPage;
+    BlockListModel? primaryNavigation = root?.PrimaryNavigation;
+}
+<nav 
+    x-data="store"
+    class="primary-navigation" 
+    :class="[windowScrolled ? 'scrolled' : '', open ? 'open' : '']"
+    @@scroll.window.debounce="windowScrolled = window.scrollY > 10"
+    @@keydown.window.escape="closeAll()"
+    aria-label="Huvudmeny">
+    <div class="primary-navigation__top container">
+        <div class="primary-navigation__left" x-ref="containerLeft">
+            <button 
+                type="button"
+                class="primary-navigation__toggle"
+                :class="navOpen && 'primary-navigation__toggle--open'"
+                @@click="navOpen = ! navOpen">
+                <span class="icon icon--burger" x-show="!navOpen" x-cloak aria-hidden="true">
+                    <partial name="./SVG/burger.cshtml" />
+                </span>
+                <span class="icon icon--close" x-show="navOpen" x-cloak aria-hidden="true">
+                    <partial name="./SVG/close.cshtml" />
+                </span>
+                <span class="label" x-text="navOpen ? 'Stäng' : 'Meny'"></span>
+            </button>
+            <button
+                type="button"
+                class="primary-navigation__search"
+                :class="searchOpen && 'primary-navigation__search--open'"
+                @@click="searchOpen = ! searchOpen">
+                <span class="icon">
+                    <partial name="./SVG/search.cshtml" />
+                </span>
+                <span class="label" x-text="searchOpen ? 'Stäng' : 'Sök'"></span>
+            </button>
+        </div>
+        <a class="primary-navigation__logo" href="@root?.Url()" aria-label="Till startsidan">
+            <figure type="image/svg+xml" aria-hidden="true">
+                <partial name="./SVG/_Logo.cshtml" />
+            </figure>
+        </a>
+        <div class="primary-navigation__right" x-ref="containerRight">
+            <button 
+                type="button" 
+                class="primary-navigation__cart"
+                :class="cartOpen && 'primary-navigation__cart--open'"
+                @@click="cartOpen = ! cartOpen">
+                <span class="icon">
+                    <partial name="./SVG/cart.cshtml" />
+                </span>
+                <span class="label" x-text="cartOpen ? 'Stäng' : 'Kundvagn'"></span>
+                <span 
+                    class="primary-navigation__cart__quantity" 
+                    x-show="$store.cart.itemsInCart > 0"
+                    x-text="$store.cart.itemsInCart"
+                    ></span>
+            </button>
+        </div>
+        <div class="primary-navigation__overlay" :class="(navOpen || cartOpen) && 'primary-navigation__overlay--open'" x-show="navOpen || cartOpen" x-cloak @@click="navOpen = false; cartOpen = false"></div>
+        <ul class="primary-navigation__list" 
+            :class="navOpen && 'primary-navigation__list--open'"
+            x-effect="navOpen && $nextTick(() => $el.style.paddingLeft = $refs.containerLeft.getBoundingClientRect().x + 'px')"
+            x-show="navOpen" 
+            x-trap.noscroll="navOpen"
+            x-cloak 
+            @@click.outside="navOpen = false">
+            <li class="primary-navigation__list__item primary-navigation__list__item--close">
+                <button type="button" class="primary-navigation__toggle" :class="navOpen && 'primary-navigation__toggle--open'" @@click="navOpen = ! navOpen">
+                    <span class="icon icon--close" aria-hidden="true">
+                        <partial name="./SVG/close.cshtml" />
+                    </span>
+                    <span class="label">Stäng</span>
+                </button>
+            </li>
+            @if (primaryNavigation != null)
+            {
+                foreach (BlockListItem block in primaryNavigation)
+                {
+                    MenuItem? menuItem = block.Content as MenuItem;
+                    bool withChildren = menuItem?.Dropdown != null && menuItem.Dropdown.Any();
+
+                    if (menuItem != null)
+                    {
+                        if (!withChildren)
+                        {
+                            <li class="primary-navigation__list__item">
+                                <a href="@menuItem?.Link?.Url" class="primary-navigation__list__item__link">
+                                    @menuItem?.Text
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li 
+                                class="primary-navigation__list__item primary-navigation__list__item--has-children"
+                                x-data="{ open: navOpen }">
+                                <span class="primary-navigation__list__item--has-children__top">
+                                    <a href="@menuItem?.Link?.Url" class="primary-navigation__list__item__link">
+                                        @menuItem?.Text
+                                    </a>
+                                    <button type="button" class="primary-navigation__list__item__toggle" 
+                                        :class="open && 'primary-navigation__list__item__toggle--open'"
+                                        @@click="open = ! open">
+                                        <span class="icon">
+                                            <partial name="./SVG/chevron-down.cshtml" />
+                                        </span>
+                                    </button>
+                                </span>
+                                <ul class="primary-navigation__list__item__child-list child-list" x-show="open" x-cloak>
+                                    @if (menuItem?.Dropdown != null && menuItem.Dropdown.Any())
+                                    {
+                                        foreach (BlockListItem child in menuItem.Dropdown)
+                                        {
+                                           LinkWithText? item = child?.Content as LinkWithText;
+                                           if (item != null)
+                                           {
+                                               <li class="child-list__item">
+                                                   <a href="@item?.Link?.Url" class="child-list__item__link">
+                                                       @(!string.IsNullOrWhiteSpace(item?.Text) ? item?.Text : item?.Link?.Name)
+                                                   </a>
+                                               </li>
+                                           }
+                                        }
+                                    }
+                                </ul>
+                            </li>
+                        }
+                    }
+                }
+            }
+        </ul>
+        <form 
+            class="primary-navigation__search-form" 
+            x-show="searchOpen" 
+            x-effect="searchOpen && $nextTick(() => $refs.searchInput.focus())" 
+            x-cloak
+            x-trap.noscroll="searchOpen"
+            action="@root?.SearchPage?.Url()">
+            <button type="button" class="primary-navigation__search-form__close"
+                @@click="searchOpen = ! searchOpen">
+                <span class="icon icon--close">
+                    <partial name="./SVG/close.cshtml" />
+                </span>
+                <span class="label">Stäng</span>
+            </button>
+            <label class="primary-navigation__search-form__label" for="primary-navigation__search-form__input">Sök på sidan</label>
+            <div class="primary-navigation__search-form__input-wrapper">
+                <input 
+                    id="primary-navigation__search-form__input"
+                    type="text" 
+                    name="query"
+                    @@click.outside="searchOpen = false" 
+                    class="primary-navigation__search-form__input" 
+                    placeholder="Sök..."
+                    x-ref="searchInput">
+                <button type="submit" class="primary-navigation__search-form__submit">
+                    <span class="sr-only">Sök</span>
+                    <span class="icon icon--arrow">
+                        <partial name="./SVG/arrow-1.cshtml" />
+                    </span>
+                </button>
+            </div>
+        </form>
+        <div class="primary-navigation__cart-container"
+            :class="cartOpen && 'primary-navigation__cart-container--open'"
+            x-effect="cartOpen && $nextTick(() => $el.style.paddingRight = (window.innerWidth - $refs.containerRight.getBoundingClientRect().right) + 'px')"
+            x-show="cartOpen"
+            x-trap.noscroll="cartOpen"
+            x-cloak
+            @@click.outside="cartOpen = false">
+            <div class="primary-navigation__cart-container__header">
+                <h2 class="color--blue heading--3">Din kundvagn</h2>
+                <button type="button" class="primary-navigation__cart-container__close"
+                    @@click="cartOpen = false">
+                    <span class="icon icon--close">
+                        <partial name="./SVG/close.cshtml" />
+                    </span>
+                    <span class="label">Stäng</span>
+                </button>
+            </div>
+            <ul class="primary-navigation__cart-container__content" x-data>
+
+  <template x-if="$store.cart.items.length === 0">
+    <li class="primary-navigation__cart-container__item primary-navigation__cart-container__item--empty">
+      <span>Din kundvagn är tom.</span>
+    </li>
+  </template>
+
+  <template x-for="item in $store.cart.items" :key="item.productId">
+    <li class="primary-navigation__cart-container__item cart-item drop-shadow--small">
+      <span class="cart-item__image">
+        <img :src="item.imageUrl" :alt="item.name" class="cart-item__image__img">
+      </span>
+      <span class="cart-item__details">
+        <a :href="item.url" class="cart-item__details__name" x-text="item.name"></a>
+        <span class="cart-item__details__price">
+          <span x-text="item.price + 'kr/st'"></span>
+          <span class="cart-item__details__price__offer" x-show="item.twoForPrice"
+                x-text="'2 för ' + item.twoForPrice + 'kr'"></span>
+        </span>
+
+        <div class="product-form__row">
+          <button type="button" class="product-form__button product-form__button--decrease"
+                  title="Minska antal"
+                  @@click="$store.cart.updateAmountInCart(item.productId, item.quantity - 1)">
+            <span class="sr-only">Minska antal</span>
+          </button>
+          <input class="product-form__input" type="number" min="1"
+                 :max="item.inStock" :value="item.quantity" readonly>
+          <button type="button" class="product-form__button product-form__button--increase"
+                  title="Öka antal"
+                  :disabled="item.quantity >= item.inStock"
+                  @@click="$store.cart.updateAmountInCart(item.productId, item.quantity + 1)">
+            <span class="sr-only">Öka antal</span>
+          </button>
+        </div>
+      </span>
+    </li>
+  </template>
+
+  <template x-if="$store.cart.items.length > 0">
+    <li class="primary-navigation__cart-container__item primary-navigation__cart-container__item--checkout">
+      <table class="cart-table" aria-label="Kundvagnens innehåll">
+        <tbody>
+          <tr class="cart-table__row" x-show="$store.cart.savings > 0">
+            <th scope="row" class="cart-table__cell cart-table__cell--heading">Du sparar</th>
+            <td class="cart-table__cell cart-table__cell--data"><span x-text="$store.cart.savings"></span>kr</td>
+          </tr>
+          <tr class="cart-table__row">
+            <th scope="row" class="cart-table__cell cart-table__cell--heading">Totalt</th>
+            <td class="cart-table__cell cart-table__cell--data"><span x-text="$store.cart.totalPrice"></span>kr</td>
+          </tr>
+        </tbody>
+      </table>
+      <a href="/varukorg/" class="button primary-navigation__cart-container__checkout">Gå till kassan</a>
+      <!-- keep your arrow svg inside the link here -->
+    </li>
+  </template>
+</ul>
+        </div>
+    </div>
+</nav>

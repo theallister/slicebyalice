@@ -1,0 +1,49 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.TextOnImageBlock>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models.Blocks;
+@using SliceByAlice;
+@using SliceByAlice.Extensions;
+
+@{
+    string? headingSize = Model?.GetHeadingSize();
+    string? headingColor = Model?.GetHeadingColorClass("color--white");
+    string? headingStyleClass = Model?.GetHeadingStyle();
+    string? textSize = Model?.GetTextSize();
+    string? textColorClass = Model?.GetTextColorClass("color--white");
+    string? overlayColor = Model?.OverlayOpacity > 0 ? $"rgba(0, 0, 0, {Model?.OverlayOpacity/100})" : null;
+    string? dropshadowClass = Model?.GetDropShadowClass();
+}
+
+<div class="container">
+    <div class="text-on-image-block @dropshadowClass" style="border-radius: @Model?.BorderRadius">
+        @if (Model?.Image != null)
+        {
+            <div class="text-on-image-block__image-container">
+                <picture>
+                    <source srcset="@Model?.Image?.GetCropUrl(width: 1400, height: 560)" media="(min-width: 1440px)" />
+                    <source srcset="@Model?.Image?.GetCropUrl(width: 980, height: 480)" media="(min-width: 1000px)" />
+                    <source srcset="@Model?.Image?.GetCropUrl(width: 720, height: 560)" media="(min-width: 480px)" />
+                    <img src="@Model?.Image?.GetCropUrl(width: 480, height: 480)" alt="@(Model?.Image?.Value<string>("altText"))" />
+                </picture>
+            </div>
+        }
+        <div class="text-on-image-block__text-container" style="background-color:@overlayColor">
+            @if (!string.IsNullOrEmpty(Model?.Heading))
+            {
+                <h2 class="@headingSize @headingColor @headingStyleClass">@Model?.Heading</h2>
+            }
+            @if (!string.IsNullOrEmpty(Model?.Text?.ToString()))
+            {
+                <div class="rte-text @textSize @textColorClass">@Model?.Text</div>
+            }
+            @if (Model?.Buttons != null && Model.Buttons.Any())
+            {
+                foreach (var button in Model.Buttons)
+                {
+                    Button? item = button?.Content as Button;
+                    <partial name="./Partials/blocklist/Components/Button" model="item" />
+                }
+            }
+        </div>
+    </div>
+</div>

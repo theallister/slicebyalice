@@ -1,0 +1,104 @@
+@use '../Abstracts/variables' as v;
+@use '../Abstracts/mixins' as m;
+
+.button {
+    display: inline-flex;
+    flex-flow: row nowrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    margin: 8px 0;
+    border-radius: 40px;
+    transition: gap v.$transition-fast, outline-offset v.$transition-fast;
+    text-decoration: none;
+    font-size: 1.125rem;
+    font-family: v.$font-body;
+
+    .icon {
+        width: 40px;
+        height: 32px;
+        display: block;
+
+        svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    &.text--typewriter {
+        .label {
+            font-family: v.$font-typewriter;
+        }
+    }
+    &.text--regular {
+        .label {
+            font-family: v.$font-body;
+            font-weight: v.$weight-bold;
+        }
+    }
+
+    &:hover, &:focus-visible {
+        outline-style: dashed;
+        outline-offset: 4px;
+        outline-width: 2px;
+        gap: 16px;
+    }
+
+    &--blue {
+        background-color: v.$color-blue;
+        color: v.$color-white;
+        border: solid 2px v.$color-blue;
+
+        .icon svg path {
+            stroke: v.$color-white;
+        }
+    }
+    &--white {
+        background-color: v.$color-white;
+        color: v.$color-blue;
+        border: solid 2px v.$color-blue;
+
+        .icon svg path {
+            stroke: v.$color-blue;
+        }
+    }
+    &--green {
+        background-color: v.$color-green;
+        color: v.$color-blue;
+        border: solid 2px v.$color-green;
+
+        .icon svg path {
+            stroke: v.$color-blue;
+        }
+    }
+    &--red {
+        background-color: v.$color-red;
+        color: v.$color-white;
+        border: solid 2px v.$color-red;
+
+        .icon svg path {
+            stroke: v.$color-white;
+        }
+    }
+    &--yellow {
+        background-color: v.$color-yellow;
+        color: v.$color-blue;
+        border: solid 2px v.$color-yellow;
+
+        .icon svg path {
+            stroke: v.$color-blue;
+        }
+    }
+}
+.buttons-container {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 16px;
+
+    &.buttons--stacked {
+        flex-flow: column nowrap;
+        align-items: flex-start;
+    }
+}

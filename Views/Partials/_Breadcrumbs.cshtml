@@ -1,0 +1,16 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
+@{
+    IEnumerable<IPublishedContent>? path = Model?.Ancestors()?.Reverse();
+}
+
+<section class="container breadcrumbs" aria-label="Brödsmulor"> 
+    <ul class="breadcrumbs__list">
+        @foreach (IPublishedContent item in path ?? Enumerable.Empty<IPublishedContent>())
+        {
+            string name = item.Level == 1 ? "Start" : item.Name;
+            <li class="breadcrumbs__list__item"><a href="@item.Url()">@name</a></li>
+        }
+        <li class="breadcrumbs__list__item breadcrumbs__list__item--current">@Model?.Name</li>
+    </ul>
+</section>

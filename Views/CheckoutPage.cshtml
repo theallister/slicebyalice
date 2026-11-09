@@ -1,0 +1,176 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.CheckoutPage>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@{
+	Layout = "./Shared/_Layout.cshtml";
+	var nextPage = Model?.Children().FirstOrDefault();
+}
+<partial name="./Partials/blocklist/Components/HeroBlock" model="Model?.Hero?.Content" />
+<partial name="./Partials/_Breadcrumbs.cshtml" model="@Model" />
+
+<section class="container checkout-page" x-data="{ open: false}">
+	<div class="checkout-page__content border-radius drop-shadow--small">
+		<button 
+			type="button" 
+			class="checkout-page__content__toggle" 
+			:class="open && 'checkout-page__content__toggle--open'" 
+			@@click="open = !open"
+			aria-controls="checkout-page__cart-list"
+			:aria-expanded="open && 'true'">
+			<h2 class="heading--3 color--blue">Din varukorg</h2>
+			<span class="icon icon--chevron-down" aria-hidden="true">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136.89 106.65">
+					<path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="8px" d="M4,19.56c21.8,30.41,47.05,58.34,75.1,83.1,13.5-35.05,31.64-68.32,53.78-98.65"/>
+				</svg>
+			</span>
+		</button>
+		<ul class="checkout-page__cart-list" id="checkout-page__cart-list" x-show="open" x-cloak>
+			<template x-for="item in $store.cart.getCartItems()" :key="item.productId">
+				<li class="checkout-page__cart-list__item cart-item">
+					<span class="cart-item__image">
+                        <img :src="item.imageUrl" :alt="item.name" class="cart-item__image__img" />
+					</span>
+					<span class="cart-item__details cart-item__details--name">
+						<a :href="item.url" class="cart-item__details__name-link">
+							<h2 class="cart-item__details__name" x-text="item.name"></h2>
+						</a>
+						<span class="cart-item__details__product-type text--1125 color--blue" x-text="item.productType"></span>
+					</span>
+					<span class="cart-item__details cart-item__details--price">
+						<span class="cart-item__details__price" x-text="item.price + 'kr/st'"></span>
+						<span class="cart-item__details__price__offer" x-text="'2 för ' + item.twoForPrice + 'kr'" x-show="item.twoForPrice && item.quantity >= 2"></span>
+					</span>
+					<span class="cart-item__details cart-item__details--quantity" x-text="item.quantity + ' st'"></span>
+					<span class="cart-item__details cart-item__details--total">
+						<span class="cart-item__details__total-label">Totalt:</span>
+						<span class="cart-item__details__total" x-text="item.totalPrice + 'kr'"></span>
+					</span>
+					<template x-if="item.productType == 'Hälsningskort med kuvert'">
+						<span class="cart-item__details cart-item__details--envelope">
+							<h3 class="heading--4 color--blue">Valda kuvert:</h3>
+							<template x-for="envelope in item.selectedEnvelopes" :key="envelope">
+								<span class="cart-item__details__envelope text--1 color--blue" x-text="envelope + ' (' + item.selectedEnvelopes.filter(e => e === envelope).length + ')'"></span>
+							</template>
+						</span>
+					</template>
+				</li>
+			</template>
+		</ul>
+	</div>
+	<div class="checkout-page__content border-radius drop-shadow--small">
+		<div class="checkout-page__content__heading-container">
+			<h2 class="checkout-page__content__heading heading--3 color--blue">Betalningsinformation</h2>
+			<p class="checkout-page__content__description">Fält markerade med * är obligatoriska.</p>
+		</div>
+		<form 
+			class="form checkout-page__form" 
+			action="@nextPage?.Url()" 
+			method="post" 
+			x-data="form">
+			<input type="hidden" name="JSONCart" id="JSONCart" :value="JSON.stringify($store.cart.items)" />
+			<fieldset class="form__fieldset checkout-page__form__fieldset">
+				<span class="form__fieldset__legend">
+					<legend class="color--blue">Kunduppgifter</legend>
+				</span>
+				<div class="form__row form__row--2">
+					<div class="form__item">
+						<label class="text--1 color--blue" for="firstName">Förnamn*</label>
+						<input class="text--1 color--blue border--blue" type="text" id="firstName" name="firstName" autocomplete="name" placeholder="Förnamn" required @@blur="validate($el); updateErrors($el)" :class="errors.firstName && 'form__item__input--invalid'" />
+						<span class="form__item__error-message color--blue" x-text="'Du måste ange ett förnamn'" x-show="errors.firstName"></span>
+					</div>
+					<div class="form__item">
+						<label class="text--1 color--blue" for="lastName">Efternamn*</label>
+						<input class="text--1 color--blue border--blue" type="text" id="lastName" name="lastName" autocomplete="family-name" placeholder="Efternamn" required @@blur="validate($el); updateErrors($el)" :class="errors.lastName && 'form__item__input--invalid'" />
+						<span class="form__item__error-message color--blue" x-text="'Du måste ange ett efternamn'" x-show="errors.lastName"></span>
+					</div>
+				</div>
+				<div class="form__row form__row--2">
+					<div class="form__item">
+						<label class="text--1 color--blue" for="email">E-post*</label>
+						<input class="text--1 color--blue border--blue" type="email" id="email" name="email" autocomplete="email" placeholder="E-post" required @@blur="validate($el); updateErrors($el)" :class="errors.email && 'form__item__input--invalid'" />
+						<span class="form__item__error-message color--blue" x-text="'Du måste ange en e-postadress'" x-show="errors.email"></span>
+					</div>
+					<div class="form__item">
+						<label class="text--1 color--blue" for="phone">Telefonnummer*</label>
+						<input class="text--1 color--blue border--blue" type="tel" id="phone" name="phone" autocomplete="tel" placeholder="Telefonnummer" required @@blur="validate($el); updateErrors($el)" :class="errors.phone && 'form__item__input--invalid'" />
+						<span class="form__item__error-message color--blue" x-text="'Du måste ange ett telefonnummer'" x-show="errors.phone"></span>
+					</div>
+				</div>
+			</fieldset>
+			<fieldset class="form__fieldset checkout-page__form__fieldset">
+				<span class="form__fieldset__legend">
+					<legend class="color--blue">Leveransadress</legend>
+				</span>
+				<div class="form__row form__row--2">
+					<div class="form__item">
+						<label class="text--1 color--blue" for="address">Adress*</label>
+						<input class="text--1 color--blue border--blue" type="text" id="address" name="address" autocomplete="address-line1" placeholder="Adress" required @@blur="validate($el); updateErrors($el)" :class="errors.address && 'form__item__input--invalid'" />
+						<span class="form__item__error-message color--blue" x-text="'Du måste ange en adress'" x-show="errors.address"></span>
+					</div>
+					<div class="form__item">
+						<label class="text--1 color--blue" for="address2">Adress, rad 2</label>
+						<input class="text--1 color--blue border--blue" type="text" id="address2" name="address2" autocomplete="address-line2" placeholder="Adress 2" />
+					</div>
+				</div>
+				<div class="form__row form__row--2">
+					<div class="form__item">
+						<label class="text--1 color--blue" for="postalCode">Postnummer*</label>
+						<input class="text--1 color--blue border--blue" type="text" id="postalCode" name="postalCode" autocomplete="postal-code" placeholder="Postnummer" required @@blur="validate($el); updateErrors($el)" :class="errors.postalCode && 'form__item__input--invalid'" />
+						<span class="form__item__error-message color--blue" x-text="'Du måste ange ett postnummer'" x-show="errors.postalCode"></span>
+					</div>
+					<div class="form__item">
+						<label class="text--1 color--blue" for="city">Stad*</label>
+						<input class="text--1 color--blue border--blue" type="text" id="city" name="city" autocomplete="address-level2" placeholder="Stad" required @@blur="validate($el); updateErrors($el)" :class="errors.city && 'form__item__input--invalid'" />
+						<span class="form__item__error-message color--blue" x-text="'Du måste ange en stad'" x-show="errors.city"></span>
+					</div>
+				</div>
+			</fieldset>
+			<fieldset class="form__fieldset checkout-page__form__fieldset" x-data="{ billingAddressSameAsDelivery: false }">
+				<span class="form__fieldset__legend">
+					<legend class="color--blue">Faktureringsadress</legend>
+				</span>
+				<div class="form__row form__row--billingsameasdelivery">
+					<div class="form__item">
+						<div class="store__filter__form__item store__filter__form__item--checkbox">
+							<input 
+								class="form__checkbox" 
+								type="checkbox" 
+								id="billingAddressSameAsDelivery" 
+								name="billingAddressSameAsDelivery" 
+								x-model="billingAddressSameAsDelivery" />
+							<label for="billingAddressSameAsDelivery" class="text--1 color--blue">Samma som leveransadress</label>
+						</div>
+					</div>
+				</div>
+				<div class="form__row form__row--2" x-show="!billingAddressSameAsDelivery" x-cloak>
+					<div class="form__item">
+						<label class="text--1 color--blue" for="billingAddress">Adress</label>
+						<input class="text--1 color--blue border--blue" type="text" id="billingAddress" name="billingAddress" autocomplete="address-line1" placeholder="Adress"  x-bind:disabled="billingAddressSameAsDelivery" />
+					</div>
+					<div class="form__item">
+						<label class="text--1 color--blue" for="billingAddress2">Adress, rad 2</label>
+						<input class="text--1 color--blue border--blue" type="text" id="billingAddress2" name="billingAddress2" autocomplete="address-line2" placeholder="Adress 2" x-bind:disabled="billingAddressSameAsDelivery" />
+					</div>
+				</div>
+				<div class="form__row form__row--2" x-show="!billingAddressSameAsDelivery" x-cloak>
+					<div class="form__item">
+						<label class="text--1 color--blue" for="billingPostalCode">Postnummer</label>
+						<input class="text--1 color--blue border--blue" type="text" id="billingPostalCode" name="billingPostalCode" autocomplete="postal-code" placeholder="Postnummer"  x-bind:disabled="billingAddressSameAsDelivery" />
+					</div>
+					<div class="form__item">
+						<label class="text--1 color--blue" for="billingCity">Stad</label>
+						<input class="text--1 color--blue border--blue" type="text" id="billingCity" name="billingCity" autocomplete="address-level2" placeholder="Stad"  x-bind:disabled="billingAddressSameAsDelivery" />
+					</div>
+				</div>
+			</fieldset>
+			<div class="form__row form__row--submit">
+				<button type="submit" class="button form__submit button--blue">
+					Lägg beställning
+					<span class="icon icon--arrow stroke--white" aria-hidden="true">
+						<partial name="./Partials/SVG/arrow-1.cshtml" />
+					</span>
+				</button>
+			</div>
+		</form>
+	</div>
+</section>

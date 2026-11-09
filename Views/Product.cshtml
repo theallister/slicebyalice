@@ -1,0 +1,378 @@
+﻿@using SliceByAlice
+@using SliceByAlice.Services
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.Blocks
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.Product>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@inject IProductService ProductService
+
+@{
+    Layout = "./Shared/_Layout.cshtml";
+
+    string? productName = !string.IsNullOrWhiteSpace(Model?.Heading) ? Model?.Heading : Model?.Name;
+    bool hasPrevPrice = Model?.PastLowestPrice > 0 && Model?.PriceChangeDate > DateTime.Now.AddMonths(-1);
+
+	bool isBlockedByMarket = Model?.Id != null ? ProductService.IsBlockedByMarket(Model.Id) : false;
+}
+<partial name="./Partials/_Breadcrumbs.cshtml" />
+<section class="container product__header" aria-labelledby="product-header__heading">
+	@if (Model?.Image != null)
+    {
+        string? imageUrl = Model?.Image?.GetCropUrl(width: 720, height: 800, quality: 80);
+        string? imageFullUrl = Model?.Image?.Url();
+        string? imageAlt = Model?.Image?.Value<string>("altText");
+
+        IEnumerable<MediaWithCrops>? additionalImages = Model?.AdditionalImages;
+
+		<div class="product__header__image-section"
+			x-data="{ 
+				currentImage: '@imageUrl',
+				imageFullUrl: '@imageFullUrl',
+				setImage(image, fullUrl) {
+					this.currentImage = image
+					this.imageFullUrl = fullUrl
+				},
+				scrollImageList(direction) {
+					const imageList = this.$refs.imageList
+					const currentImageElement = this.$refs[`img-${this.currentImage}`]
+					currentImageElement.style.display = 'none'
+
+					let nextImageElement
+
+					if (direction === 'left') {
+						nextImageElement = currentImageElement.previousElementSibling ?? currentImageElement.parentElement.lastElementChild
+						nextImageElement.style.display = 'block'
+						this.currentImage = nextImageElement.getAttribute('src')
+						this.imageFullUrl = nextImageElement.getAttribute('data-full-url')
+						imageList.scrollBy({ left: -180, behavior: 'smooth' })
+					} else if (direction === 'right') {
+						nextImageElement = currentImageElement.nextElementSibling ?? currentImageElement.parentElement.firstElementChild
+						nextImageElement.style.display = 'block'
+						this.currentImage = nextImageElement.getAttribute('src')
+						this.imageFullUrl = nextImageElement.getAttribute('data-full-url')
+						imageList.scrollBy({ left: 180, behavior: 'smooth' });
+					}
+				}
+			}">
+				<div class="product__header__image-wrapper drop-shadow--small" aria-live="polite" aria-atomic="true">
+					<a :href="imageFullUrl" data-fancybox>
+						<img class="product__header__image" x-ref="img-@imageUrl" data-full-url="@imageFullUrl" src="@imageUrl" x-show="currentImage === '@imageUrl'" alt="@imageAlt" />
+						@if (additionalImages != null && additionalImages.Any())
+                    {
+                        foreach (MediaWithCrops additionalImage in additionalImages)
+                        {
+                            string? additionalImageUrl = additionalImage?.GetCropUrl(width: 720, height: 800, quality: 80);
+								<img class="product__header__image" x-ref="img-@additionalImageUrl" data-full-url="@additionalImage?.Url()" x-show="currentImage === '@additionalImageUrl'" src="@additionalImageUrl" alt="@(additionalImage?.Value<string>("altText"))" />
+                        }
+                    }
+					</a>
+				</div>
+				@if (additionalImages != null && additionalImages.Any())
+            {
+					<nav aria-label="Produktbilder" class="product__header__image-list__nav-wrapper">
+						<button 
+							class="product__header__image-list__nav-item product__header__image-list__nav-item--prev drop-shadow--small"
+							type="button" 
+							aria-label="Navigera vänster"
+							@@click="scrollImageList('left')">
+							<span class="icon icon--prev" aria-hidden="true"></span>
+						</button>
+						<ul class="product__header__image-list" x-ref="imageList">
+							<li class="product__header__image-list__item">
+								<button 
+									type="button"
+									aria-label="Visa bild @(Model?.Image?.Value<string>("altText"))"
+									:aria-current="currentImage === '@imageUrl'"
+									@@click="setImage('@imageUrl', '@imageFullUrl')">
+									<img src="@Model?.Image?.GetCropUrl(width: 180, height: 180, quality: 60)" alt="@(Model?.Image?.Value<string>("altText"))" />
+								</button>
+							</li>
+							@foreach (MediaWithCrops additionalImage in additionalImages)
+                        {	
+                            string? additionalImageUrl = additionalImage?.GetCropUrl(width: 720, height: 800, quality: 80);
+								<li class="product__header__image-list__item">
+									<button 
+										type="button"
+										class="drop-shadow--small"
+										aria-label="Visa bild @(additionalImage?.Value<string>("altText"))"
+										:aria-current="currentImage === '@additionalImageUrl'"
+										@@click="setImage('@additionalImageUrl', '@additionalImage?.Url()')">
+										<img src="@additionalImage?.GetCropUrl(width: 180, height: 180, quality: 60)" alt="@(additionalImage?.Value<string>("altText"))" />
+									</button>
+								</li>
+                        }
+						</ul>
+						<button 
+							class="product__header__image-list__nav-item product__header__image-list__nav-item--next drop-shadow--small"
+							type="button" 
+							aria-label="Navigera höger"
+							@@click="scrollImageList('right')">
+							<span class="icon icon--next" aria-hidden="true"></span>
+						</button>
+					</nav>
+            }
+		</div>
+    }	
+	<div class="product__header__content" x-data="store">
+		<div class="product__header__content__section drop-shadow--small">
+			<h1 id="product-header__heading" class="heading--xl color--blue">@productName</h1>
+			<div class="product-header__content__cta">
+				<div class="product-price">
+					<p class="product-price__price color--blue">@(Model?.Price)kr</p>
+					@if (hasPrevPrice)
+                    {
+						<div x-data="{ showInfo: false }">
+							<span class="product-price__price product-price__price--previous">@(Model?.PastLowestPrice)kr</span>
+							<button class="product-price__info-button" type="button" @@click="showInfo = ! showInfo">
+								<span class="icon icon--info" aria-hidden="true" aria-label="Visa information">
+									<partial name="./Partials/SVG/info.cshtml" />
+								</span>
+							</button>
+							<div x-show="showInfo" x-cloak>
+								<p>Tidigare lägsta pris: @(Model?.PastLowestPrice)kr</p>
+								<p>Senaste prisändring: @Model?.PriceChangeDate.ToString("yyyy-MM-dd")</p>
+							</div>
+						</div>
+                    }
+					@if (Model?.BuyTwoPrice > 0)
+                    {
+						<p class="product-price__offer">2 för @(Model?.BuyTwoPrice)kr</p>
+                    }
+				</div>
+				<div class="product-form">
+					@if (Model?.InStock > 0 && !isBlockedByMarket)
+                    {
+					<form 
+						x-data="{
+							quantity: 1,
+							max: @(Model?.InStock),
+							id: @(Model?.Id),
+							increment() {
+								if (this.quantity < this.max) {
+									this.quantity += 1
+								} else {
+									this.quantity = this.max
+								}
+							},
+							decrement() { if (this.quantity > 1) this.quantity -= 1 },
+							setValue(value) { 
+								if (value > 0 && value <= this.max) {
+									this.quantity = value
+								}
+							}
+						}"
+						x-on:submit.prevent="await $store.cart.addToCart(id, quantity)">
+						@if (Model?.InStock > 1)
+						{
+							<label class="product-form__label color--blue" for="product-quantity">Välj antal</label>
+							<div class="product-form__row">
+								<button class="product-form__button product-form__button--decrease" type="button" title="Minska antal" @@click="decrement()">
+									<span class="sr-only">Minska antal</span>
+								</button>
+								<input 
+									class="product-form__input" 
+									type="number" 
+									id="product-quantity" 
+									:value="quantity" 
+									name="quantity" 
+									min="1" 
+									max="@Model?.InStock" 
+									x-model="quantity" 
+									readonly />
+								<button class="product-form__button product-form__button--increase" type="button" title="Öka antal" @@click="increment()">
+									<span class="sr-only">Öka antal</span>
+								</button>
+							</div>		
+                                }
+						<button type="submit" class="product-form__submit" aria-describedby="product-header__heading">
+							Lägg i kundvagn <span class="weight--regular">(<span x-text="quantity"></span>)</span>
+							<span class="icon icon--cart" aria-hidden="true">
+							</span>
+						</button>	
+					</form>
+                    }
+                    else if (!isBlockedByMarket)
+                    {
+						<p class="product-form__out-of-stock">Slut i lager</p>
+                    }
+					else if (isBlockedByMarket)
+					{
+						<p class="product-form__blocked-by-market">
+							Denna produkt befinner sig på marknad och kan inte beställas just nu. Kom tillbaka senare!
+						</p>
+					}
+				</div>
+				<div class="product__information__item" x-data="{ open: true }">
+					<button class="product__information__item__toggle" :class="open && 'product__information__item__toggle--open'" type="button" @@click="open = !open">
+						<h2 class="heading--4 color--blue">Produktinformation</h2>
+						<span class="icon icon--chevron-down" aria-hidden="true">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136.89 106.65">
+								<path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="8px" d="M4,19.56c21.8,30.41,47.05,58.34,75.1,83.1,13.5-35.05,31.64-68.32,53.78-98.65"/>
+							</svg>
+						</span>
+					</button>
+					<p class="color--blue text--1125" x-show="open">@Model?.Preamble</p>
+				</div>
+			</div>
+		</div>
+		@if (Model?.Information != null && Model.Information.Any())
+        {
+            foreach(BlockListItem informationItem in Model.Information)
+            {
+                HeadingAndInformation? item = informationItem.Content as HeadingAndInformation;
+
+				<div class="product__header__content__section drop-shadow--small">
+					<div class="product__information__item" x-data="{ open: false }">
+						<button class="product__information__item__toggle" :class="open && 'product__information__item__toggle--open'" type="button" @@click="open = !open">
+							<h2 class="heading--4 color--blue">@item?.Heading</h2>
+							<span class="icon icon--chevron-down" aria-hidden="true">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136.89 106.65">
+									<path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="8px" d="M4,19.56c21.8,30.41,47.05,58.34,75.1,83.1,13.5-35.05,31.64-68.32,53.78-98.65"/>
+								</svg>
+							</span>
+						</button>
+						<div class="rte-text text--1125 color--blue" x-show="open">@item?.Text</div>
+					</div>
+				</div>
+            }
+        }
+		<div class="product__header__content__section drop-shadow--small">
+			<div class="product__information__item" x-data="{ open: false }">
+				<button class="product__information__item__toggle" :class="open && 'product__information__item__toggle--open'" type="button" @@click="open = !open">
+					<h2 class="heading--4 color--blue">Mått</h2>
+					<span class="icon icon--chevron-down" aria-hidden="true">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136.89 106.65">
+							<path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="8px" d="M4,19.56c21.8,30.41,47.05,58.34,75.1,83.1,13.5-35.05,31.64-68.32,53.78-98.65"/>
+						</svg>
+					</span>
+				</button>
+				<div class="rte-text text--1125 color--blue" x-show="open">
+					<dl class="product__information__item__measurements">
+						@if (Model?.Width > 0)
+                        {
+							<dt>Bredd:</dt>
+							<dd>@(Model.Width)mm</dd> <br />
+                        }
+						@if (Model?.Height > 0)
+                        {
+							<dt>Höjd:</dt>
+							<dd>@(Model.Height)mm</dd> <br />
+                        }
+						@if (!string.IsNullOrWhiteSpace(Model?.PrintSize))
+                        {
+							<dt>Pappersformat:</dt>
+							<dd>@Model.PrintSize</dd> <br />
+                        }
+						@if (!string.IsNullOrWhiteSpace(Model?.SizeClothing))
+                        {
+							<dt>Klädstorlek:</dt>
+							<dd>@Model.SizeClothing</dd> <br />
+                        }
+					</dl>
+				</div>
+			</div>
+		</div>
+		@if (Model != null && !Model.HideCategoryContent)
+		{
+			CategoryPage? categoryPage = Model?.Ancestor<CategoryPage>();
+			BlockListModel? categoryInformation = categoryPage?.ReuseContent;
+
+			if (categoryInformation != null && categoryInformation.Any())
+			{
+				foreach(BlockListItem informationItem in categoryInformation)
+				{
+					HeadingAndInformation? item = informationItem.Content as HeadingAndInformation;
+
+					<div class="product__header__content__section drop-shadow--small">
+						<div class="product__information__item" x-data="{ open: false }">
+							<button class="product__information__item__toggle" :class="open && 'product__information__item__toggle--open'" type="button" @@click="open = !open">
+								<h2 class="heading--4 color--blue">@item?.Heading</h2>
+								<span class="icon icon--chevron-down" aria-hidden="true">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136.89 106.65">
+										<path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="8px" d="M4,19.56c21.8,30.41,47.05,58.34,75.1,83.1,13.5-35.05,31.64-68.32,53.78-98.65"/>
+									</svg>
+								</span>
+							</button>
+							<div class="rte-text text--1125 color--blue" x-show="open">@item?.Text</div>
+						</div>
+					</div>
+				}
+			}
+		}
+	</div>
+</section>
+
+@if (Model != null && Model.Id > 0)
+{
+	<section class="product__related-products">
+		@{
+			List<Product>? relatedProducts = ProductService.GetRelatedProducts(Model.Id, 3);
+		}
+		<div class="product-block store__section">
+			<div class="container"> 
+				<div class="block__heading">
+					<h2 class="heading--2 color--blue">Upptäck mer!</h2>
+				</div>
+			</div>
+			<div class="product-block__products">
+				<div class="container">
+					<ul class="grid grid--3">
+						@foreach (var product in relatedProducts)
+						{
+							bool onSale = product?.Tag != null && product.Tag.Any(x => x.Name == "REA");
+							bool isNew = product?.CreateDate > DateTime.Now.AddDays(-30);
+
+							<li class="grid__card drop-shadow--small">
+								<a href="@product?.Url()" class="inner inner--is-link">
+									@if (product?.Image != null)
+									{
+										<div class="grid__card__image" style="aspect-ratio: 1">
+											<img src="@product.Image?.GetCropUrl(width: 400, height: 400, quality: 80)" alt="@product.Image?.Name" />
+										</div>
+									}
+									@if (onSale)
+									{
+										<span class="grid__card__badge grid__card__badge--right text--1 grid__card__badge--sale drop-shadow--small">REA</span>
+									}
+									@if (isNew)
+									{
+										<span class="grid__card__badge grid__card__badge--left text--1 grid__card__badge--new drop-shadow--small">NY</span>
+									}
+									<div class="grid__card__price">
+										@if (product?.Price > 0)
+										{
+											<span class="grid__card__price--amount text--1 color--blue">@(product.Price)kr</span>
+										}
+										@if (product?.BuyTwoPrice > 0)
+										{
+											<span class="grid__card__price--amount text--1 color--blue">2 för @(product.BuyTwoPrice)kr</span>
+										}
+									</div>
+									<div class="grid__card__content">
+										<h2 class="heading--4 color--blue">@product?.Name</h2>
+										@if (!string.IsNullOrWhiteSpace(product?.Preamble))
+										{
+											<p class="grid__card__text text--1 color--blue">@product?.Preamble</p>
+										}
+										<span class="grid__card__link-text text--1 color--blue">
+											Visa produkten
+											<span class="icon" aria-hidden="true">
+												<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257.21 112.55">
+													<g>
+														<path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="12px" d="M4,45.49c79.88,5.54,160.17,5.22,240.01-.96"/>
+														<path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="12px" d="M154.04,4c30.67,17.7,64.36,30.17,99.17,36.69-20.44,20.26-38.3,43.12-53,67.86"/>
+													</g>
+												</svg>
+											</span>
+										</span>
+									</div>
+								</a>
+							</li>
+						}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</section>
+}

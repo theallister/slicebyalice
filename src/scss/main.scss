@@ -1,0 +1,91 @@
+// Abstracts
+@use './Abstracts/variables' as v;
+@use './Abstracts/reuse';
+// Components
+@use './Components/blocks';
+@use './Components/buttons';
+@use './Components/footer';
+@use './Components/forms';
+@use './Components/hero';
+@use './Components/primary-navigation';
+@use './Components/store-components';
+@use './Components/swipers';
+// Pages
+@use './Pages/search-page';
+@use './Pages/Store/cart-page';
+@use './Pages/Store/checkout-page';
+@use './Pages/Store/product-collection-pages';
+@use './Pages/Store/product-page';
+//Externals
+@use '../../node_modules/@fancyapps/ui/dist/fancybox/fancybox.css';
+@use '../../node_modules/swiper/swiper-bundle.min.css';
+
+// Normalize
+* {
+    box-sizing: border-box;
+}
+html {
+    scroll-behavior: smooth;
+}
+body {
+    padding: 0;
+    margin: 0;
+    background-color: v.$color-white;
+}
+// Resets
+.mp-0 {
+    margin: 0;
+    padding: 0;
+}
+.reset-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+h1, h2, h3, h4, p, li, a {
+    font-family: v.$font-body;
+}
+// Styles
+.border-radius {
+    border-radius: 16px;
+    overflow: hidden;
+}
+.shadow-regular {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+// Accessibility
+.sr-only, .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+// Override colors for accessibility
+*[style="background-color: #f4f1de;"],
+*[style="background-color: #f4f1de"],
+*[style="background-color: transparent;"],
+*[style="background-color: transparent"]
+.background--white {
+    .color--red  {
+        color: v.$color-red-contrast;
+    }
+
+    .stroke--red {
+        &, * {
+            stroke: v.$color-red-contrast;
+        }
+    }
+    
+    .color--green  {
+        color: v.$color-green-contrast;
+    }
+
+    .color--yellow  {
+        color: v.$color-yellow-contrast;
+    }
+}

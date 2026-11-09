@@ -1,0 +1,54 @@
+
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models.Blocks;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+
+@{
+    HeroBlock? hero = Model.Value<BlockListItem>("hero")?.Content as HeroBlock;
+
+}
+<li class="grid__card">
+    <a class="inner inner--is-link drop-shadow--small" href="@Model?.Url()">
+        @if (hero?.Image != null)
+        {
+            <div class="grid__card__image" style="aspect-ratio: 2/1">
+                <img src="@hero?.Image?.GetCropUrl(400, 200)" alt="@hero?.Image?.Value("altText")" />
+            </div>
+        }
+        <div class="grid__card__content">
+            <h2 class="grid__card__heading color--blue heading--2">@(!string.IsNullOrWhiteSpace(hero?.Heading) ? hero.Heading : Model?.Name)</h2>
+            @if (!string.IsNullOrWhiteSpace(hero?.Preamble))
+            {
+                <p class="grid__card__text text--125 color--blue">@hero?.Preamble</p>
+            }
+            <span class="grid__card__link-text text--125 color--blue">
+                @getReadMoreLabel(Model?.ContentType.Alias)
+                <span class="icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257.21 112.55">
+                        <g>
+                            <path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="8px" d="M4,45.49c79.88,5.54,160.17,5.22,240.01-.96"/>
+                            <path fill="none" stroke="#3D405B" stroke-linecap="round" stroke-linejoin="round" stroke-width="8px" d="M154.04,4c30.67,17.7,64.36,30.17,99.17,36.69-20.44,20.26-38.3,43.12-53,67.86"/>
+                        </g>
+                    </svg>
+                </span>
+            </span>
+        </div>
+    </a>
+</li>
+
+@functions 
+{
+    private string getReadMoreLabel(string? contentType)
+    {
+        switch (contentType)
+        {
+            case "CategoryPage":
+                return "Visa kategorin";
+            case "AllProductsPage":
+                return "Visa alla produkter";
+            default:
+                return "Läs mer";
+        }
+    }
+}

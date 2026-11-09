@@ -1,0 +1,30 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.ProductsPage>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@{
+	Layout = "./Shared/_Layout.cshtml";
+	List<CategoryPage>? categories = Model?.Children<CategoryPage>()?.ToList();
+}
+<partial name="./Partials/singleblock/Components/HeroBlock.cshtml" model="@Model?.Hero?.Content" />
+<partial name="./Partials/_Breadcrumbs.cshtml" model="@Model" />
+
+<section class="container store__section store__section--categories">
+	<ul class="grid grid--4">
+		@if (categories != null && categories.Any())
+		{
+			foreach (CategoryPage category in categories)
+			{
+				<partial name="./Partials/_GridCardHeroItem.cshtml" model="@category" />
+			}
+		}
+		@if (Model?.Children<AllProductsPage>()?.Any() == true)
+		{
+			foreach (AllProductsPage allProductsPage in Model?.Children<AllProductsPage>()?.ToList() ?? Enumerable.Empty<AllProductsPage>())
+			{
+				<partial name="./Partials/_GridCardHeroItem.cshtml" model="@allProductsPage" />
+			}
+		}
+	</ul>
+</section>
+
+@Html.GetBlockListHtml(Model?.BlockList)

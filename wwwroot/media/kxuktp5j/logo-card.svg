@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 139.01 95.16">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: #424143;
+      }
+
+      .cls-3 {
+        fill: none;
+        stroke: #424143;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.5px;
+      }
+
+      .cls-2 {
+        font-family: BulletinTypewriterMN-Regular, 'Bulletin Typewriter MN';
+        font-size: 18.31px;
+      }
+    </style>
+  </defs>
+  <g id="Order_receipt_banner" data-name="Order receipt banner">
+    <g>
+      <text class="cls-2" transform="translate(31.83 76.29)"><tspan x="0" y="0">slicebyalice</tspan></text>
+      <g>
+        <path class="cls-3" d="M15.52,53.78c-.66-3.71-1.05-7.48-1.31-11.24-.51-7.35-.49-14.92,1.13-22.14,1.63-7.26,4.95-14.96,11.53-19.02,3.32-2.05,3.53,1.33,3.62,4.1.27,8.8-2.51,18.3-3.85,26.94-1.57,10.14-6.35,49.51-3.22,58.04,2.41,6.59,8.5,4.05,8.33-1.25-.06-1.72-.57-3.55-1.63-4.93"/>
+        <path class="cls-3" d="M33.14,22.91s-2.08-4.92-12.69-5.11c-5.12-.09-11.26,1.58-14.46,5.87-1.8,2.41-2.7,6.38-.02,8.55,3.18,2.57,8.22-.39,11.42-1.58,4.93-1.83,15.3-6.88,18.4.23,3.22,7.39-8.71,13.07-15.34,13.45s-13.26-.19-19.7-2.65"/>
+        <path class="cls-3" d="M40.91,22.15s.19,21.78,2.08,20.08"/>
+        <path class="cls-3" d="M49.43,32.19s0,11.18,1.7,9.09"/>
+        <circle class="cls-1" cx="49.5" cy="25.51" r="1.21"/>
+        <path class="cls-3" d="M62.6,30.99c-.38-.45-7.57-.22-6.82,6.5.69,6.12,7.2,6.06,9.66,3.6"/>
+        <path class="cls-3" d="M68.74,36.06l10.32-.98s-1.36-4.97-5.88-4.22-5.5,5.35-3.47,8.21,6.86,4.37,9.64.98"/>
+        <g>
+          <path class="cls-3" d="M99.83,18.93c-1.2,31.86-29.15,41.22-38.74,39.3"/>
+          <path class="cls-3" d="M85.91,49.9s14.11,2.84,16.95-5.49-3.03-25.48-3.03-25.48c0,0-21.31,10.61-13.92,30.97"/>
+          <polyline class="cls-3" points="84.8 38 88.18 46.96 100.52 47.47"/>
+          <polyline class="cls-3" points="86.19 33.04 90.93 44.12 103.05 43.56"/>
+          <polyline class="cls-3" points="89.03 28.59 93.39 40.33 103.43 38.82"/>
+          <polyline class="cls-3" points="91.87 24.93 95.76 35.88 103.24 33.99"/>
+          <polyline class="cls-3" points="101.85 27.26 98.31 28.5 95.66 21.9"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

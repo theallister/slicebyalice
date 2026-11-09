@@ -1,0 +1,125 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.CartPage>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@{
+	Layout = "./Shared/_Layout.cshtml";
+	CheckoutPage? checkoutPage = Model?.Children<CheckoutPage>()?.FirstOrDefault();
+}
+<partial name="./Partials/singleblock/Components/HeroBlock" model="Model?.Hero?.Content" />
+<partial name="./Partials/_Breadcrumbs.cshtml" model="@Model" />
+
+<section class="container cart-page" x-data>
+	<template x-if="$store.cart.items.length > 0">
+		<ul class="cart-page__cart-list border-radius drop-shadow--medium">
+			<template x-if="$store.cart.items.length === 0">
+				<li class="primary-navigation__cart-container__item primary-navigation__cart-container__item--empty">
+					<span>Din kundvagn är tom.</span>
+				</li>
+			</template>
+			<template x-for="item in $store.cart.items" :key="item.productId">
+				<li class="cart-item cart-page__cart-list__item">
+					<span class="cart-item__image">
+                        <img :src="item.imageUrl" :alt="item.name" class="cart-item__image__img" />
+					</span>
+					<span class="cart-item__details cart-item__details--name">
+						<a :href="item.url" class="cart-item__details__name-link">
+							<h2 class="cart-item__details__name" x-text="item.name"></h2>
+						</a>
+						<span class="cart-item__details__product-type text--1125 color--blue" x-text="item.productType"></span>
+					</span>
+					<span class="cart-item__details cart-item__details--price">
+						<span class="cart-item__details__price" x-text="item.price + 'kr/st'"></span>
+						<span class="cart-item__details__price__offer" x-text="'2 för ' + item.twoForPrice + 'kr'" x-show="item.twoForPrice && item.quantity >= 2"></span>
+					</span>
+					<span class="cart-item__details cart-item__details--quantity">
+						<form x-data="{ quantity: item.quantity }" x-on:submit="$store.cart.updateAmountInCart(item.productId, quantity)">
+							<label class="sr-only" :for="'quantity-' + item.productId">Uppdatera antal</label>
+							<div class="product-form__row">
+								<button type="submit" class="product-form__button product-form__button--decrease" title="Minska antal" @@click="quantity > 1 ? quantity-- : quantity">
+									<span class="sr-only">Minska antal</span>
+								</button>
+								<input 
+									class="product-form__input" 
+									type="number" 
+									:id="'quantity-' + item.productId" 
+									:value="quantity" 
+									name="quantity" 
+									min="1" 
+									:max="item.inStock" 
+									x-model="quantity" 
+									readonly />
+								<button class="product-form__button product-form__button--increase" type="submit" title="Öka antal" @@click="quantity < item.inStock ? quantity++ : quantity">
+									<span class="sr-only">Öka antal</span>
+								</button>
+							</div>
+						</form>
+					</span>
+					<span class="cart-item__details cart-item__details--total">
+						<span class="cart-item__details__total-label">Totalt:</span>
+						<span class="cart-item__details__total" x-text="item.totalPrice + 'kr'"></span>
+					</span>
+					<span class="cart-item__details cart-item__details--remove">
+						<form x-on:submit="$store.cart.removeFromCart(item.productId)">
+							<button type="submit" class="cart-item__details__remove-button" title="Ta bort" @@click="$store.cart.removeFromCart(item.productId)">
+								<span class="icon icon--remove"></span>
+								<span class="label text--0875 color--blue">Ta bort</span>
+							</button>
+						</form>
+					</span>
+					<template x-if="item.productType == 'Hälsningskort med kuvert'">
+						<span class="cart-item__details cart-item__details--envelope">
+							<h3 class="heading--4 color--blue">Välj kuvert</h3>
+							<p class="text--0875 color--blue">Du kan välja <span x-text="item.quantity"></span> kuvert</p>
+							<form 
+								x-data="{ 
+									quantityToSelect: item.quantity, 
+									selectedEnvelopes: item.selectedEnvelopes ?? [],
+									addEnvelope: function(envelope) {
+										this.selectedEnvelopes.push(envelope)
+										$store.cart.addEnvelopeToCart(item.productId, envelope, 1)
+									},
+									removeEnvelope: function(envelope) {
+										this.selectedEnvelopes = this.selectedEnvelopes.filter(e => e !== envelope)
+										$store.cart.removeEnvelopeFromCart(item.productId, envelope, 1)
+									}
+								}">
+								<div class="form__radio-list form__radio-list--horizontal form__radio-list--center">
+									<template x-for="envelope in $store.cart.availableEnvelopes" :key="envelope">
+										<div>
+											<button 
+												type="button" 
+												class="form__radio--button" 
+												:class="{'form__radio--button--selected': selectedEnvelopes.includes(envelope), 'form__radio--button--disabled': selectedEnvelopes.length >= quantityToSelect}" 
+												@@click="addEnvelope(envelope)"
+												:disabled="selectedEnvelopes.length >= quantityToSelect">
+												<span x-text="envelope"></span><span x-text="' (' + selectedEnvelopes.filter(e => e === envelope).length + ')'" x-show="selectedEnvelopes.filter(e => e === envelope).length > 0"></span>
+											</button>
+											<div class="form__radio--button__controls" x-show="selectedEnvelopes.includes(envelope) && selectedEnvelopes.length">
+												<button type="button" class="remove" @@click="removeEnvelope(envelope)" aria-label="Ta bort kuvert" title="Ta bort kuvert"></button>
+												<button type="button" class="add" @@click="addEnvelope(envelope)" aria-label="Lägg till kuvert" title="Lägg till kuvert" x-show="selectedEnvelopes.length < quantityToSelect"></button>
+											</div>
+										</div>
+									</template>
+								</div>
+							</form>
+						</span>
+					</template>
+				</li>
+			</template>
+			<li class="cart-item cart-page__cart-list__item--summary">
+				<h3 class="color--blue">Totalt: <span x-text="'TODO:' + 'kr'"></span></h3>
+				<a href="@checkoutPage?.Url()" class="button">
+					Gå till kassan
+					<span class="icon icon--arrow" aria-hidden="true">
+						<partial name="./Partials/SVG/arrow-wave.cshtml" />
+					</span>
+				</a>
+			</li>
+		</ul>
+	</template>
+	<template x-if="$store.cart.getCartItems().length === 0">
+		<section class="cart-page__empty">
+			@Html.GetBlockListHtml(Model?.BlockList)
+		</section>
+	</template>
+</section>

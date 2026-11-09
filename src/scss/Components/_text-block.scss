@@ -1,0 +1,24 @@
+@use '../Abstracts/variables' as v;
+
+.text-block {
+    &__inner {
+        max-width: 900px;
+        margin: 0 auto;
+        border-radius: 24px;
+
+        &--background {
+            padding: 24px 16px;
+
+            @media screen and (v.$query-small) {
+                padding: 32px 24px;
+            }
+        }
+
+        h2 {
+            margin: 0;
+        }
+        .rte-text {
+            margin: 1rem 0;
+        }
+    }
+}

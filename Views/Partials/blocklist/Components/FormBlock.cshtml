@@ -1,0 +1,52 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.FormBlock>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using SliceByAlice;
+@using SliceByAlice.Extensions;
+@using Umbraco.Cms.Core.Models.Blocks;
+@{
+    string? headingSize = Model?.GetHeadingSize();
+    string? headingColor = Model?.GetHeadingColorClass();
+    string? headingStyleClass = Model?.GetHeadingStyle();
+    string? textSize = Model?.GetTextSize();
+    string? textColorClass = Model?.GetTextColorClass();
+    string? iconStrokeClass = Model?.GetSvgPathClass(textColorClass ?? "");
+    string? outlineColorClass = Model?.GetOutlineColorClass(textColorClass ?? "");
+    bool hasHeading = !string.IsNullOrWhiteSpace(Model?.Heading);
+}
+
+<div class="container">
+    <div class="block__heading">
+        @if (hasHeading)
+        {
+            <h2 class="@headingSize @headingStyleClass @headingColor" id="@Model?.Heading?.ToUrlSegment()">@Model?.Heading</h2>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model?.Preamble?.ToString()))
+        {
+            <div class="rte-text @textSize @textColorClass">@(Model?.Preamble)</div>
+        }
+        @if (Model?.Buttons != null && Model.Buttons.Any())
+        {
+            foreach (var button in Model.Buttons)
+            {
+                Button? item = button?.Content as Button;
+                <partial name="./Partials/blocklist/Components/Button" model="item" />
+            }
+        }
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model?.FormToShow))
+    {
+        string formKey = "";
+        switch (Model?.FormToShow)
+        {
+            case "Kontakt":
+                formKey = "FormContact";
+                break;
+            case "Commissions":
+                formKey = "FormCommissions";
+                break;
+        }
+        <div class="form-block__form">
+            <partial name="../../@(formKey).cshtml" model="Model" />
+        </div>
+    }
+</div>

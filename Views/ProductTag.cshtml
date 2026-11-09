@@ -1,0 +1,47 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ProductTag>
+
+@{
+	Layout = "./Shared/_Layout.cshtml";
+	int mobileBreak = 720;
+	IPublishedContent? rootNode = Model?.Ancestor<ProductsPage>();
+
+	List<ProductCategory>? categories = new List<ProductCategory>();
+	List<Product>? products = rootNode?.Descendants<Product>().Where(x => x != null && x.Tag != null && x.Tag.Any(t => t?.Id == Model?.Id)).ToList();
+
+	if (products != null && products.Any())
+	{	
+		foreach (Product product in products)
+		{
+			ProductCategory? category = product.Ancestor<ProductCategory>();
+			if (category != null && !categories.Contains(category))
+				categories.Add(category);
+		}
+	}
+}
+<partial name="./Partials/singleblock/Components/HeroBlock.cshtml" model="@Model?.Hero?.Content" />
+<partial name="./Partials/_Breadcrumbs.cshtml" model="@Model" />
+
+<section id="store" x-data="storeFilter">
+	<section class="container container--split"
+		x-init="open = window.innerWidth > @mobileBreak">
+		<aside 
+			class="container__aside store__filter"
+			@@resize.window="open = window.innerWidth > @mobileBreak">
+			@{
+				ViewData["categories"] = categories;
+			}
+			<partial name="./Partials/_Store-filter.cshtml" model="@Model" />
+		</aside>
+		<div class="container__content store__section store__section--products">
+			<ul class="grid grid--3">
+				@foreach (Product product in products ?? Enumerable.Empty<Product>())
+				{
+					<partial name="./Partials/_GridCardStore.cshtml" model="@product" />
+				}
+			</ul>
+		</div>
+	</section>
+</section>
+
+@Html.GetBlockListHtml(Model?.BlockList)

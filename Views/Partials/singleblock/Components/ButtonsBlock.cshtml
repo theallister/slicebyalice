@@ -1,0 +1,55 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.ButtonsBlock>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models;
+@using SliceByAlice
+
+@{
+    string buttonsContainerClass = "buttons-container";
+    if (!string.IsNullOrEmpty(Model?.ButtonListStyle)) buttonsContainerClass += " buttons--" + Model?.ButtonListStyle;
+
+    string? blockButtonBg = Model?.BlockButtonBackground?.Color;
+    string? blockButtonColor = Model?.BlockButtonColor?.Color;
+    string? blockButtonStyle = !string.IsNullOrWhiteSpace(Model?.BlockbuttonStyle) && Model.BlockbuttonStyle == "Typewriter" ? "text--typewriter" : "text--standard";
+}
+
+<div class="@buttonsContainerClass">
+    @if (Model?.Buttons != null && Model.Buttons.Any())
+    {
+        foreach (var button in Model.Buttons)
+        {
+            Button? item = button?.Content as Button;
+            string? arrowStyle = !string.IsNullOrWhiteSpace(item?.ArrowStyle) ? item.ArrowStyle : "arrow-1";
+            string? buttonLabel = !string.IsNullOrWhiteSpace(item?.Text) ? item.Text : item?.Link?.Name;
+            Link? link = item?.Link;
+            string? backgroundColor = !string.IsNullOrWhiteSpace(item?.BackgroundColor?.Color) ? item.BackgroundColor.Color : blockButtonBg;
+            string? textColorClass = !string.IsNullOrWhiteSpace(item?.GetTextColorClass()) ? item.GetTextColorClass() : blockButtonColor;
+            string? svgColorClass = item?.GetSvgPathClass(textColorClass ?? "color--blue");
+            string? linkDescribedBy = link?.Target == "_blank" ? "target-blank" : null;
+            string? linkRel = link?.Target == "_blank" ? "noopener noreferrer" : null;
+            string? textStyleClass = item?.GetTextStyle(blockButtonStyle) ?? blockButtonStyle;
+            bool showArrow = item != null && item.ShowArrow;
+
+            @if (!string.IsNullOrWhiteSpace(buttonLabel) && link?.Url != null)
+            {
+                <a
+                    class="button @textStyleClass @textColorClass"
+                    href="@link?.Url"
+                    target="@link?.Target"
+                    aria-describedby="@linkDescribedBy"
+                    rel="@linkRel"
+                    style="outline-color:@backgroundColor; background-color: @backgroundColor;">
+                    <span class="label">
+                        @buttonLabel
+                    </span>
+                    @if (showArrow && item?.ArrowStyle != "no-arrow")
+                    {
+                        <span class="icon icon--arrow icon--arrow--@arrowStyle @(item?.GetSvgPathClass(textColorClass ?? "color--blue"))" aria-hidden="true">
+                            <partial name="../../SVG/@(arrowStyle).cshtml" />
+                        </span>
+                    }
+                </a>
+            }
+
+        }
+    }
+</div>

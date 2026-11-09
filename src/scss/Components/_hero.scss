@@ -1,0 +1,83 @@
+@use '../Abstracts/variables' as v;
+@use '../Abstracts/mixins' as m;
+
+.hero {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 16px;
+    border-radius: 16px;
+
+    &--small {
+        .hero__image-container {
+            height: 320px;
+        }
+    }
+    &--medium {
+        .hero__image-container {
+            height: 460px;
+        }
+    }
+    &--large {
+        .hero__image-container {
+            height: 560px;
+        }
+    }
+
+    &__no-image {
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        &, * {
+            text-align: center;
+        }
+    }
+    
+    &__image-container {
+        width: 100%;
+        height: 460px;
+        
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        &__svg-container {
+            @include m.center-content;
+
+            & {
+                width: 100%;
+                height: 100%;
+                img {
+                    width: auto;
+                    height: 50%;
+                    object-fit: contain;
+                }
+            }
+        }
+    }
+
+    &__content {
+        @include m.absolute-cover;
+
+        & {
+            display: flex;
+            flex-flow: column;
+            align-items: flex-start;
+            justify-content: flex-end;
+        }
+
+        &__inner {
+            margin: 8px;
+            padding: 16px;
+            max-width: 400px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+    }
+}

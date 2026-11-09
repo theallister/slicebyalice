@@ -1,0 +1,213 @@
+@use '../Abstracts/variables' as v;
+@use '../Abstracts/mixins' as m;
+
+.cart-item {
+    width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background-color: white;
+    border-radius: 16px;
+
+    &__image {
+        flex: 120px 0 0;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+    &__details {
+        flex: 1 1 auto;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        gap: 8px;
+
+        &__name, &__name-link {
+            @include m.text-link;
+
+            & {
+                text-decoration: none;
+                color: v.$color-blue;
+                font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+                font-weight: v.$weight-bold;
+                margin: 0;
+            }
+        }
+
+        &__price {
+            color: v.$color-blue;
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+
+            &__offer {
+                display: block;
+                color: v.$color-red;
+                font-weight: v.$weight-bold;
+            }
+        }
+        &__total {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            color: v.$color-blue;
+        }
+        &__remove-button {
+            @include m.reset-button;
+            @include m.button-outline;
+            @include m.center-content;
+
+            & {
+                border-radius: 16px;
+                flex-flow: column;
+                gap: 4px;
+            }
+            
+            .icon {
+                display: block;
+                width: 32px;
+                height: 32px;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: 80%;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 218.09 254.95'%3E%3Cpath fill='none' stroke='%233D405B' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M17.65,46.25c-2.46,60.31,3.85,146.38,19.45,204.7,48.28-9.86,97.91-13.12,147.07-9.67.81-65.01,10.55-138.49,11.36-203.5'/%3E%3Cpath fill='none' stroke='%233D405B' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M4,44.47l210.09-11.4'/%3E%3Cpath fill='none' stroke='%233D405B' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M188.75,25.92l-4.83-21.92c-52.12,7.81-104.89,11.27-157.59,10.32-.07,8.95-.14,17.9-.22,26.85'/%3E%3Cpath fill='none' stroke='%233D405B' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M147.58,237.74c-7.28-65.22,2.44-131.02,5.59-196.57'/%3E%3Cpath fill='none' stroke='%233D405B' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M105.35,237.7c-2.1-65.51,4.19-132.71,2.08-198.22'/%3E%3Cpath fill='none' stroke='%233D405B' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M74.86,246.22c-10.29-66.03-12.72-133.29-7.21-199.89'/%3E%3C/svg%3E");
+            }
+            .label {
+                display: block;
+                text-align: center;
+                font-family: v.$font-body;
+            }
+        }
+
+        &--envelope {
+            flex: 100% 0 0;
+
+            h3, p {
+                margin: 0;
+            }
+        }
+    }
+}
+
+.cart-table {
+    width: 100%;
+
+    &__cell {
+        padding: 8px;
+        color: v.$color-blue;
+        font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+
+        &--heading {
+            text-align: left;
+        }
+        &--data {
+            text-align: right;
+        }
+    }
+}
+
+.product-form {
+    form {
+        width: auto;
+        display: flex;
+        flex-flow: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+    &__label {
+        display: block;
+        font-family: v.$font-body;
+        font-weight: v.$weight-bold;
+        letter-spacing: 0.05rem;
+        margin: 0.5rem 0;
+    }
+    &__row {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        gap: 0;
+    }
+    &__button {
+        @include m.reset-button;
+
+        & {
+            width: 40px;
+            height: 40px;
+            border: solid 2px v.$color-blue;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 60%;
+            transition: outline-offset v.$transition-regular;
+        }
+
+        &--decrease {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 85.56 12.69'%3E%3Cg%3E%3Cpath fill='none' stroke='%233D405B' stroke-linecap='round' stroke-linejoin='round' stroke-width='8px' d='M4,4c25.59,4.98,51.74,6,77.56,3.04'/%3E%3C/g%3E%3C/svg%3E");
+            border-radius: 16px 0 0 16px;
+        }
+        &--increase {
+            border-radius: 0 16px 16px 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 83.83 101.57'%3E%3Cg%3E%3Cpath fill='none' stroke='%233D405B' stroke-linecap='round' stroke-linejoin='round' stroke-width='8px' d='M44.3,4c-3.2,31.07-3.87,62.39-2,93.57'/%3E%3Cpath fill='none' stroke='%233D405B' stroke-linecap='round' stroke-linejoin='round' stroke-width='8px' d='M4,53.11c24.92-5.07,50.42-7.23,75.83-6.43'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        &:hover,
+        &:focus-visible {
+            outline: dashed 2px v.$color-blue;
+            outline-offset: 4px;
+        }
+    }
+    &__input {
+        min-width: 40px;
+        max-width: 120px;
+        height: 40px;
+        text-align: center;
+        line-height: 40px;
+        border-top: solid 2px v.$color-blue;
+        border-bottom: solid 2px v.$color-blue;
+        border-left: none;
+        border-right: none;
+        font-family: v.$font-body;
+        font-weight: v.$weight-regular;
+        font-size: clamp(1rem, 2.5vw, 1.25rem);
+
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    }
+    &__submit {
+        cursor: pointer;
+        display: inline-flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: v.$font-body;
+        font-weight: v.$weight-bold;
+        padding: 8px 24px;
+        font-size: clamp(1rem, 2.5vw, 1.25rem);
+        letter-spacing: 0.05rem;
+        color: v.$color-white;
+        background-color: v.$color-blue;
+        border-radius: 40px;
+        transition: gap v.$transition-fast, outline-offset v.$transition-fast;
+        margin-top: 1rem;
+        
+        .icon { 
+            display: block;
+            width: 24px;
+            height: 24px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-8 -8 220.42 180.67'%3E%3Cg%3E%3Cpath fill='none' stroke='%23F4F1DE' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M4,14.78c18.12-3.59,36.24-7.18,54.36-10.78,1.09,35.07,2.18,70.14,3.27,105.21,43.7-4.06,87.4-8.11,131.1-12.17,3.79-26.11,3.36-52.83-1.24-78.81-42.04,14.57-86.36,22.51-130.84,23.45'/%3E%3Cpath fill='none' stroke='%23F4F1DE' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M61.56,112.56l-.78,23.35c46.77-1.6,93.44-6.1,139.65-13.49'/%3E%3Cpath fill='none' stroke='%23F4F1DE' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M81.25,139.29c-8.35-3.92-19.64,3.07-19.85,12.3-.21,9.22,10.75,16.72,19.27,13.19s10.95-16.59,4.27-22.95'/%3E%3Cpath fill='none' stroke='%23F4F1DE' stroke-linecap='round' stroke-linejoin='round' stroke-width='12px' d='M192.16,134.19c5.81,6.3,2.34,18.35-5.93,20.59s-17.35-6.42-15.5-14.79,13.72-12.4,20.28-6.9'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+        }
+
+        &:hover, &:focus-visible {
+            gap: 16px;
+            outline-offset: 4px;
+            outline: 2px dashed v.$color-blue;
+        }
+    }
+}

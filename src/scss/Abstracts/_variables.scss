@@ -1,0 +1,35 @@
+// Colors
+$color-white: #F4F1DE;
+$color-red: #E07A5F;
+$color-red-contrast: #b84424;
+$color-blue: #3D405B;
+$color-green: #81B29A;
+$color-green-contrast: #5d957a;
+$color-yellow: #F2CC8F;
+$color-yellow-contrast: #efb960;
+
+// Widths
+$width-large: 1440px;
+$width-medium: 1000px;
+$width-small: 720px;
+$width-tiny: 400px;
+
+// Queries
+$query-large: "(min-width: #{$width-large})";
+$query-medium: "(min-width: #{$width-medium})";
+$query-small: "(min-width: #{$width-small})";
+$query-tiny: "(min-width: #{$width-tiny})";
+
+// Fonts
+$font-body: montserrat, sans-serif;
+$font-typewriter: bulletin-typewriter-mn, sans-serif;
+
+// Weights
+$weight-thin: 100;
+$weight-regular: 400;
+$weight-bold: 700;
+
+// Transitions
+$transition-fast: 0.2s ease-in-out;
+$transition-regular: 0.4s ease-in-out;
+$transition-long: 0.6s ease-in-out;

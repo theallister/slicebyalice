@@ -1,0 +1,20 @@
+@using SliceByAlice.Extensions
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListModel>
+@{
+    if (Model?.Any() != true) { return; }
+}
+<div class="block-list">
+    @foreach (var block in Model)
+    {
+        if (block?.ContentKey == null) { continue; }
+        IPublishedElement? data = block.Content;
+        bool isTextImageBlockWithBg = data.ContentType.Alias == TextImageBlock.ModelTypeAlias && !string.IsNullOrWhiteSpace(data.Value<string>("borderRadius"));
+        string? marginClass = !string.IsNullOrWhiteSpace(data.Value<string>("marginSize")) ? "margin--" + data.Value<string>("marginSize")?.ToLower().Replace(" ", "-") : null;
+        string backgroundClass = !isTextImageBlockWithBg && data.HasValue("backgroundColor") ? "block--background" : "";
+        string? backgroundColor = !isTextImageBlockWithBg && data.HasValue("backgroundColor") ? data.Value<string>("backgroundColor") : null;
+        
+        <section class="block block--@(data?.ContentType.Alias.ToLower()) @marginClass @backgroundClass" aria-labelledby="@(data?.Value<string>("heading")?.ToUrlSegment())" style="background-color: @(backgroundColor ?? "transparent");">
+            @await Html.PartialAsync("blocklist/Components/" + data?.ContentType.Alias, block.Content)
+        </section>
+    }
+</div>

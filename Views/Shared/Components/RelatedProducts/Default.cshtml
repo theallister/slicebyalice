@@ -1,0 +1,12 @@
+@using Umbraco.Cms.Core.Models
+@model List<Product>
+
+<section class="container store__section store__section--products store__section--related-products">
+    <h2 class="heading--2 color--blue">Relaterade produkter</h2>
+    <ul class="grid grid--4">
+        @foreach (Product product in Model)
+        {
+            <partial name="../../../Partials/_GridCardStore.cshtml" model="product" />
+        }
+    </ul>
+</section>
